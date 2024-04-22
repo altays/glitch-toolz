@@ -4,25 +4,17 @@ const path = require('node:path');
 
 [nodePath, filePath, route, input, output, ...args] = process.argv;
 
-// set to blank if nothing
-// const inputFormat = input.slice(-3)
 let inputFormat, outputFormat;
-
-// if output file is blank, set to txt
 
 switch (route) {
     case 'analyze':
         inputFormat = utilities.defaultValue(input, null)
-        outputFormat = utilities.defaultValue(output, 'txt')
-        console.log(`analyzing ${input} and saving to ${output}`);
+        // console.log(`analyzing ${input} and saving to ${output}`);
         utilities.analyze(input, output, inputFormat)
-        console.log(inputFormat)
         break;
     case 'compile':
-        inputFormat = utilities.defaultValue(input, null)
         outputFormat = utilities.defaultValue(output, 'txt')
-        console.log(outputFormat)
-        console.log(`compiling ${input} and saving to ${output}`);
+        // console.log(`compiling ${input} and saving to ${output}`);
         utilities.compile(input, output, outputFormat)
         break;
     case 'test':
@@ -37,26 +29,7 @@ switch (route) {
 
 // MVP3 - processing
 
-// updating skeleton
-// GIF processing
-// // 1 - break file into chunks -  save NOTABLE individual sections as txt files in a folder (including other data that is necessary but can't be manipulated)
-// // // header
-// // // logical screen descriptor - read bytes, flow if GCT
-// // // global color table if exists - from LSD, if exists and how big
-// // // application extension if exists (will ID as animation)
-// // // frames
-    // // // GCE
-    // // // image descriptor
-    // // // local color table if exists -> save a copy, scramble copy
-    // // // image data -> save a copy, scramble copy
-// // // // terminator
-// // 2 - compiling a gif
-// // // loop over directory, save data per txt file
-// // // from individual sections saved as txt files, combine into one gif file
-// // 3 - manipulating sections - in general, make a copy, scramble copy
-// // // manipulate color table
-// // // if GCEs exists, manipulating transitions
-// // // manipulating image data (shuffle, randomize, use text analysis)
+
 
 // JPEG processing
 // // 1 - break file into chunks - save NOTABLE individual sections as txt files in a folder (including other data that is necessary but can't be manipulated)

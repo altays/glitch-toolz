@@ -6,35 +6,49 @@ let dataPath = path.join(homePath,'/data/')
 let inputPath = path.join(homePath,'/input/')
 let outputPath = path.join(homePath,'/output/')
 
-// make a folder, analyze a file, save txt files for each section in new folder
-    // future enhancement - search for if folder already exists - if so, iterate over
 exports.analyze = (input, output, format) => {   
     const data = fs.readFileSync(path.join(inputPath,`${input}`), "hex");
-   
-    const dataFolderPath = path.join(dataPath,output.slice(0,-4))
+    let outputName = output.slice(0,-4)
+    let dataFolderPath = path.join(dataPath,outputName);
+    let pathIncrement = 0;
+    let folders = []
 
-    try {
-        fs.mkdirSync(dataFolderPath)
-    } catch (err) {
-        console.log(err)
-    }
-   
-    try {
-        // gif and jpeg processing here
-        // MVP 2 gif based analysis
-            // break data into file section chunks
-                // save with incremenet + section type
-           
-        // MVP 3 jpeg based analysis
-                // break data into file section chunks
-                    // save with incremenet + section type
+    fs.readdir(dataPath, function (err, files) {
+        //handling error
+        if (err) {
+            return console.log('Unable to scan directory: ' + err);
+        } 
         
-        // MVP 4 other format based analysis
-        fs.writeFileSync(path.join(dataFolderPath,`${output}`),data,"hex")
-    } catch (err) {
-        console.log(err)
-    }
-   
+        let fileNameCheck = files.includes(outputName)
+
+        if (!fileNameCheck) {
+            console.log('if')
+            try {
+                fs.mkdirSync(dataFolderPath)
+                formatSelect(format,data,output,dataFolderPath)
+            } catch (err) {
+                console.log(err)
+            }
+
+        } else {
+        
+            while (fileNameCheck == true) {
+                outputName+= pathIncrement
+                fileNameCheck = files.includes(outputName)
+                pathIncrement++
+                
+            }
+            dataFolderPath=path.join(dataPath,outputName);
+            try {
+                fs.mkdirSync(dataFolderPath)
+                formatSelect(format,data,output,dataFolderPath)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+ 
+    }); 
+ 
 }
 
 // read a folder, read the data from each file, add data to a variable, write the data to a file
@@ -59,9 +73,30 @@ exports.defaultValue = (value, defaultValue) => {
 }
 
 // functions to create
-// // create folder - https://nodejs.org/en/learn/manipulating-files/working-with-folders-in-nodejs
 // // naming convention
 // // // number of section
 // // // name of section
 // // // iterating
 // // iterating over a dataset
+
+
+function formatSelect(dataFormat, dataFile, dataOut, dataFolderPathInfo) {
+    try {
+        switch(dataFormat) {
+            case 'gif':
+                // helper functions for GIF processing
+                // update write function to write multiple files into folder
+                fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOut}`),dataFile,"hex")
+                break;
+            case 'jpg':
+                // fs.writeFileSync(path.join(dataFolderPath,`${output}`),data,"hex");
+                break;
+            default:
+                console.log('no processing')
+                // fs.writeFileSync(path.join(dataFolderPath,`${output}`),data,"hex");
+                break;
+            }               
+    } catch (err) {
+        console.log(err)
+    }
+}
