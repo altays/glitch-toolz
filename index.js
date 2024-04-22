@@ -1,40 +1,39 @@
 const fs = require('node:fs');
 const utilities = require('./modules/utilities');
+const path = require('node:path');
 
 [nodePath, filePath, route, input, output, ...args] = process.argv;
 
-const inputFormat = input.slice(-3)
-const outputFormat = output.slice(-3)
+// set to blank if nothing
+// const inputFormat = input.slice(-3)
+let inputFormat, outputFormat;
+
+// if output file is blank, set to txt
 
 switch (route) {
     case 'analyze':
+        inputFormat = utilities.defaultValue(input, null)
+        outputFormat = utilities.defaultValue(output, 'txt')
         console.log(`analyzing ${input} and saving to ${output}`);
         utilities.analyze(input, output, inputFormat)
+        console.log(inputFormat)
         break;
     case 'compile':
+        inputFormat = utilities.defaultValue(input, null)
+        outputFormat = utilities.defaultValue(output, 'txt')
+        console.log(outputFormat)
         console.log(`compiling ${input} and saving to ${output}`);
         utilities.compile(input, output, outputFormat)
         break;
+    case 'test':
+        console.log(path.dirname('.'))
     // case 'scrambling':
     //     console.log(`scrambling ${input} and saving to ${output}`);
     //     console.log(inputFormat)
     //     break;
-  default:
-    console.log(`Please indicate a route (analyze, compile), an input file, and an output file. Input and output files do not need routes. For instance, node scripts/index.js analyze infile.jpg outfile`);
+    default:
+        console.log(`Please indicate a route (analyze, compile), an input file, and an output file. Input and output files do not need routes. Or, check out the package.json file for test scripts`);
 }
-
-
-
-// using CLI
-// // grammar
-// // // node index.js -analyze inputfile -> analyze file, store data, do some analysis
-// // // node index.js -scramble format thing options -> scramble thing in this format, using these options
-// // // node index.js -compile output
-// // MVPs
-// // // console logs
-// // // store file data
-// // // read file data and create a new one
-// // // formatting and processing -> below
 
 // MVP3 - processing
 
