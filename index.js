@@ -6,6 +6,7 @@ const path = require('node:path');
 
 let inputFormat, outputFormat;
 
+
 switch (route) {
     case 'analyze':
         inputFormat = utilities.defaultValue(input, null)

@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path')
+const gif = require('../gif');
 
 let homePath = path.basename(`./assets/`)
 let dataPath = path.join(homePath,'/data/')
@@ -14,7 +15,6 @@ exports.analyze = (input, output, format) => {
     let folders = []
 
     fs.readdir(dataPath, function (err, files) {
-        //handling error
         if (err) {
             return console.log('Unable to scan directory: ' + err);
         } 
@@ -22,7 +22,7 @@ exports.analyze = (input, output, format) => {
         let fileNameCheck = files.includes(outputName)
 
         if (!fileNameCheck) {
-            console.log('if')
+
             try {
                 fs.mkdirSync(dataFolderPath)
                 formatSelect(format,data,output,dataFolderPath)
@@ -38,7 +38,9 @@ exports.analyze = (input, output, format) => {
                 pathIncrement++
                 
             }
+
             dataFolderPath=path.join(dataPath,outputName);
+
             try {
                 fs.mkdirSync(dataFolderPath)
                 formatSelect(format,data,output,dataFolderPath)
@@ -72,21 +74,13 @@ exports.defaultValue = (value, defaultValue) => {
     return num;
 }
 
-// functions to create
-// // naming convention
-// // // number of section
-// // // name of section
-// // // iterating
-// // iterating over a dataset
-
-
-function formatSelect(dataFormat, dataFile, dataOut, dataFolderPathInfo) {
+function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
     try {
         switch(dataFormat) {
             case 'gif':
                 // helper functions for GIF processing
-                // update write function to write multiple files into folder
-                fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOut}`),dataFile,"hex")
+               
+                // fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
                 break;
             case 'jpg':
                 // fs.writeFileSync(path.join(dataFolderPath,`${output}`),data,"hex");
@@ -98,5 +92,13 @@ function formatSelect(dataFormat, dataFile, dataOut, dataFolderPathInfo) {
             }               
     } catch (err) {
         console.log(err)
+    }
+}
+
+exports.binaryToBool =(value) => {
+    if (value == 1) {
+        return true
+    } else {
+        return false
     }
 }
