@@ -4,6 +4,7 @@ const utilities = require('../utilities');
     // MVP1 - analyze data correctly
         // scaffold out code
         // using test image, identify sections to test against when pulling data
+        // also get other test images - static with local color table, animation with local color tables and frames
         // test, correct
     // MVP2 - create separate files
         // could export gif analysis functions to the utilities section
@@ -13,18 +14,7 @@ const utilities = require('../utilities');
         // number of frames
         // per frame, disposal method
 
-exports.gifAnalyze = (data, outname) => {
-
-    // initial analysis - loop over file
-        // identify start of different sections
-        // analyze LSD for presence of GCT
-        // save information to an object
-            // section name
-            // indexes of start and end
-            // increment if multiple frames
-    // looping
-        // per item in array - create a new file (start + end, name)
-       
+exports.gifAnalyze = (data) => {
     
     let gifStructure = []
     // object schema
@@ -35,22 +25,24 @@ exports.gifAnalyze = (data, outname) => {
     
     // structural
         // header
-        let headerObj = {name:'header',start:0,end:5,section:1}
-        gifStructure.push(headerObj)
-            // first six bits
-        // LSD
-        let logicalSD = {name:'LSD',start:6,end:12,section:2}
+        let headerObj = analyzeHeader(data)
+        let logicalSD = analyzeLSD(data)
+        let globalCT = analyzeGCT(data,Object.values(logicalSD[2]))
+        console.log(headerObj)
+        console.log(logicalSD)
+        console.log(globalCT)
+        // console.log(logicalSD)
             // 7 bits
             // 5th byte contains if GCT or not, size of color table
         // GCT if exists
-        let globalCT = {name:'GCT', start:0,end:0,section:3}
+        // let globalCT = {name:'GCT', start:0,end:0,section:3}
             // 2, 4, 8, 16, 32, 64, 128, 256 colors
             // RGB - 3 bytes per color
         // application extension (if animation) - starts with 21 FF, ends with 00
-        let appExt = {name:'AExt', start:0,end:0,section:4}
+        // let appExt = {name:'AExt', start:0,end:0,section:4}
     // per frame
         // GCE - 8 bytes (optional)
-            let graphicsCE = {name:'GCE', start:0,end:0,section:5}
+            // let graphicsCE = {name:'GCE', start:0,end:0,section:5}
             // packed fields contain transparency stuff
             // another bytes for which character is transparent
         // image descriptor - 10 bytes - per frame
@@ -64,14 +56,18 @@ exports.gifAnalyze = (data, outname) => {
 
     // trailer - 1 bytes, 3B    
 
-    let trailer = data.slice()
+    // let trailer = data.slice()
 
     // then, create separate files
+}
+
+function analyzeHeader(data) {
+    return ["header",{"bytes":data.slice(0,12)}]
 }
     
 function hex2bin(hex){
     hex = hex.replace("0x", "").toLowerCase();
-    var output = "";
+    let out = "";
     for(var c of hex) {
         switch(c) {
             case '0': out += "0000"; break;
@@ -93,19 +89,18 @@ function hex2bin(hex){
             default: return "";
         }
     }
-    return output;
+    return out;
 }
 
-// returns LSD, other bits for later usage
 function analyzeLSD(data){
-    let logicalSD = data.slice(6,13)
-    let packedField = logicalSD[4]
-    let backgroundColorIndex = logicalSD[5]
+    let logicalSD = data.slice(12,26)
+    let packedField = logicalSD.slice(8,10)
+    let backgroundColorIndex = logicalSD.slice(10,12)
     let packedFieldBin = hex2bin(packedField)
     let globalCTBool = utilities.binaryToBool(packedFieldBin[0])
     let globalCTSize = parseInt(packedFieldBin.slice(5,8),2)
     let gctByteSize;
-
+    
     switch (globalCTSize) {
         case 0:
             gctByteSize=6;
@@ -136,10 +131,10 @@ function analyzeLSD(data){
             break;
     }
 
-    return [globalCTBool, globalCTSize, backgroundColorIndex,gctByteSize]
+    return ["logicalScreenDesc",{"bytes":logicalSD},{"global colortable bool":globalCTBool}, {"global CT Size":globalCTSize},{"GCT Byte Size":gctByteSize},{"background color index":backgroundColorIndex}]
 }
 
-// returns GCT if it exists
+// returns Global Color Table OR local color if it exists
 function analyzeGCT(data, gctBool,gctByteSize){
     if (gctBool) {
         return data.slice(12,12+gctByteSize+1)
@@ -150,39 +145,92 @@ function analyzeGCT(data, gctBool,gctByteSize){
 
 // pull app extension (for animations)
 // could simplify by just slicing
-function analyzeAppExt(data, start) {
-    // is 19 bytes long
-    // appears directly after global color table
-}
+// function analyzeAppExt(data, start, bool) {
+//     let appExt = data.slice(start,start+20)
+    
+//     // is 19 bytes long
+//         // always starts with 21 FF, always ends with 00
+//         // appears directly after global color table
+
+//     if (bool) {
+//         return appExt
+//     }
+//     else {
+//         return null
+//     }
+// }
 
 // returns GCE, specific bytes for later usage
-function analyzeGCE(data,gctSize) {
-    let gceStart = 13 + gctSize;
-    let gceBytes = data.slice(gceStart, 9)
-    let gcePackedField = parseInt(hex2bin(gceBytes[4]),2)
-    let delayTime = gceBytes.slice(5,7)
-    let transparentColorIndex = gceBytes(7)
+// function analyzeGCE(data,gctSize) {
+//     let gceStart = 13 + gctSize;
+//     let gceBytes = data.slice(gceStart, 9)
+//     let gcePackedField = parseInt(hex2bin(gceBytes[4]),2)
+//     let delayTime = gceBytes.slice(5,7)
+//     let transparentColorIndex = gceBytes(7)
 
-    return [gceBytes,gcePackedField, delayTime,transparentColorIndex]
-}
+//     return [gceBytes,gcePackedField, delayTime,transparentColorIndex]
+// }
 
 // returns image descriptor
-function analyzeImageDesc(data, start) {
+// function analyzeImageDesc(data, start) {
+//     // always begins with 2C, always 10 bytes
+//     let imageDesc = data.slice(start,start+11)
+//     let packedField = imageDesc[9]
+//     let packedFieldBin = hex2bin(packedField)
+//     let localCTBool = utilities.binaryToBool(packedFieldBin[0])
+//     let globalCTSize = parseInt(packedFieldBin.slice(5,8),2)
+//     let gctByteSize;
 
-}
+//     switch (globalCTSize) {
+//         case 0:
+//             gctByteSize=6;
+//             break;
+//         case 1:
+//             gctByteSize=12;
+//             break;
+//         case 2:
+//             gctByteSize=24;
+//             break;
+//         case 3:
+//             gctByteSize=48;
+//             break;
+//         case 4:
+//             gctByteSize=96;
+//             break;
+//         case 5:
+//             gctByteSize=192;
+//             break;
+//         case 6:
+//             gctByteSize=384;
+//             break;
+//         case 7:
+//             gctByteSize=768;
+//             break;
+//         default:
+//             gctByteSize=768
+//             break;
+//     }
 
+//     return [localCTBool, localCTSize, gctByteSize]
+// }
 
 // returns local color table if exists
-function analyzeLCT(data, start) {
-
-}
+// function analyzeLCT(data, lctBool,lctByteSize){
+//     if (lctBool) {
+//         return data.slice(12,12+lctByteSizeByteSize+1)
+//     } else {
+//         return null
+//     }
+// }
 
 // returns image data
-function analyzeImageData(data, start) {
+// function analyzeImageData(data, start,end) {
+//     return data.slice(start,end)
+// }
 
-}
-
-
+// function analyzeCommentExt(data, start) {
+//  // starts with 21 FE, ends with 00   
+// }
 
 // identifying
     // structural

@@ -79,7 +79,7 @@ function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
         switch(dataFormat) {
             case 'gif':
                 // helper functions for GIF processing
-               
+                gif.gifAnalyze(dataFile)
                 // fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
                 break;
             case 'jpg':
