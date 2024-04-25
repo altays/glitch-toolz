@@ -80,7 +80,7 @@ function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
             case 'gif':
                 // helper functions for GIF processing
                 gif.gifAnalyze(dataFile)
-                // fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
+                fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
                 break;
             case 'jpg':
                 // fs.writeFileSync(path.join(dataFolderPath,`${output}`),data,"hex");
@@ -95,10 +95,23 @@ function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
     }
 }
 
-exports.binaryToBool =(value) => {
+exports.binaryToBool = (value) => {
     if (value == 1) {
         return true
     } else {
         return false
     }
+}
+
+exports.getIndicesOf = (searchStr, str, caseSensitive) => {
+    var startIndex = 0, index, indices = [];
+    if (!caseSensitive) {
+        str = str.toLowerCase();
+        searchStr = searchStr.toLowerCase();
+    }
+    while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+        indices.push(index);
+        startIndex = index + 1;
+    }
+    return indices;
 }

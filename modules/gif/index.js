@@ -16,6 +16,7 @@ const utilities = require('../utilities');
 
 exports.gifAnalyze = (data) => {
     
+    // let gifData = data.split("")
     let gifStructure = []
     // object schema
         // section name
@@ -24,22 +25,37 @@ exports.gifAnalyze = (data) => {
         // section number
     
     // structural
-        // header
         let headerObj = analyzeHeader(data)
+        let headerLegnth = Object.values(headerObj[1])[0].length
         let logicalSD = analyzeLSD(data)
-        let globalCT = analyzeGCT(data,Object.values(logicalSD[2]))
-        console.log(headerObj)
-        console.log(logicalSD)
-        console.log(globalCT)
-        // console.log(logicalSD)
-            // 7 bits
-            // 5th byte contains if GCT or not, size of color table
-        // GCT if exists
-        // let globalCT = {name:'GCT', start:0,end:0,section:3}
-            // 2, 4, 8, 16, 32, 64, 128, 256 colors
-            // RGB - 3 bytes per color
-        // application extension (if animation) - starts with 21 FF, ends with 00
-        // let appExt = {name:'AExt', start:0,end:0,section:4}
+        let logicalSDLength = Object.values(logicalSD[1])[0].length
+
+        // toggle - if exists then run, otherwise skip
+        let globalCT = analyzeGCT(data,Object.values(logicalSD[2]),Object.values(logicalSD[4]))
+        let globalCTlength = Object.values(logicalSD[4])[0]
+
+        let imageDescInfo = countImageDesc(data)
+        
+        // loop over based on number of image descs OR graphicsCE
+            // if GCE exists, loop overGCE
+            // if GCE doesn't exist, loop ove
+
+        // let graphicsCE = analyzeGCE(data)
+        
+        let localColorTable = analyzeLCT(data,Object.values(imageDescInfo[0])[2],Object.values(imageDescInfo[0])[3])
+        console.log(imageDescInfo)
+
+        // GCE -> image desc -> lct (maybe) -> image data
+        // or image desc -> lct (maybe) -> image data
+
+        // need to come back to the appllication Ext when I have an animation I can work with
+        // let applicationExt = analyzeAppExt(data, headerLegnth+logicalSDLength+globalCTlength)
+        
+        // console.log(graphicsCE)
+
+        // combining together
+            // rearrange in array order based on gif structure, name of section
+        
     // per frame
         // GCE - 8 bytes (optional)
             // let graphicsCE = {name:'GCE', start:0,end:0,section:5}
@@ -134,94 +150,112 @@ function analyzeLSD(data){
     return ["logicalScreenDesc",{"bytes":logicalSD},{"global colortable bool":globalCTBool}, {"global CT Size":globalCTSize},{"GCT Byte Size":gctByteSize},{"background color index":backgroundColorIndex}]
 }
 
-// returns Global Color Table OR local color if it exists
 function analyzeGCT(data, gctBool,gctByteSize){
-    if (gctBool) {
-        return data.slice(12,12+gctByteSize+1)
+    if (gctBool == "true") {
+        return data.slice(12,12+parseInt(gctByteSize))
     } else {
         return null
     }
 }
 
-// pull app extension (for animations)
-// could simplify by just slicing
-// function analyzeAppExt(data, start, bool) {
-//     let appExt = data.slice(start,start+20)
-    
-//     // is 19 bytes long
-//         // always starts with 21 FF, always ends with 00
-//         // appears directly after global color table
+// come back to this with an animated gif
+function analyzeAppExt(data, start) {
+    // let appExt = data.slice(start,start+20)
 
-//     if (bool) {
-//         return appExt
-//     }
-//     else {
-//         return null
-//     }
-// }
+    // let hex = hex2bin(appExt)
+    // let appExt = data.search("21FF")
+    // console.log(appExt)
+    // is 19 bytes long
+        // always starts with 21 FF, always ends with 00
+        // appears directly after global color table
+    // return appExt
+    // if (bool) {
+        // return hex
+    // }
+    // else {
+    //     return null
+    // }
+}
 
+// wait until I have an animation to use
 // returns GCE, specific bytes for later usage
-// function analyzeGCE(data,gctSize) {
-//     let gceStart = 13 + gctSize;
-//     let gceBytes = data.slice(gceStart, 9)
-//     let gcePackedField = parseInt(hex2bin(gceBytes[4]),2)
-//     let delayTime = gceBytes.slice(5,7)
-//     let transparentColorIndex = gceBytes(7)
+function analyzeGCE(data) {
+    // let gceBytes = data.slice(gceStart, 9)
+    // let gcePackedField = parseInt(hex2bin(gceBytes[4]),2)
+    // let delayTime = gceBytes.slice(5,7)
+    // let transparentColorIndex = gceBytes(7)
+    // need a better way to find this section
+    let gceStart = data.search('21f904')
+    let gceBytes = data.slice(parseInt(gceStart), gceStart+20)
 
-//     return [gceBytes,gcePackedField, delayTime,transparentColorIndex]
-// }
 
-// returns image descriptor
-// function analyzeImageDesc(data, start) {
-//     // always begins with 2C, always 10 bytes
-//     let imageDesc = data.slice(start,start+11)
-//     let packedField = imageDesc[9]
-//     let packedFieldBin = hex2bin(packedField)
-//     let localCTBool = utilities.binaryToBool(packedFieldBin[0])
-//     let globalCTSize = parseInt(packedFieldBin.slice(5,8),2)
-//     let gctByteSize;
+    return gceBytes
 
-//     switch (globalCTSize) {
-//         case 0:
-//             gctByteSize=6;
-//             break;
-//         case 1:
-//             gctByteSize=12;
-//             break;
-//         case 2:
-//             gctByteSize=24;
-//             break;
-//         case 3:
-//             gctByteSize=48;
-//             break;
-//         case 4:
-//             gctByteSize=96;
-//             break;
-//         case 5:
-//             gctByteSize=192;
-//             break;
-//         case 6:
-//             gctByteSize=384;
-//             break;
-//         case 7:
-//             gctByteSize=768;
-//             break;
-//         default:
-//             gctByteSize=768
-//             break;
-//     }
+    // return [gceBytes,gcePackedField, delayTime,transparentColorIndex]
+}
 
-//     return [localCTBool, localCTSize, gctByteSize]
-// }
+// currently just pulling image descriptors that start at 00, 00
+function countImageDesc(data){
+    let searchTerm = "2c"
 
+    let rawImgDescIndeces = utilities.getIndicesOf(searchTerm,data,true)
+
+    let imgDescArray = [];
+
+    for (let i = 0; i < rawImgDescIndeces.length; i++) {
+        let bytes = data.substring(parseInt(rawImgDescIndeces[i]),parseInt(rawImgDescIndeces[i])+20)
+        
+        if (bytes.substring(0,10)=="2c00000000") {
+            
+            let packedField = hex2bin(bytes.slice(18,20))
+            let localCT = utilities.binaryToBool(packedField[0])
+            let lctSize = parseInt(packedField.slice(5,8),2)
+            let lctByteSize;
+
+            switch (lctSize) {
+                case 0:
+                    lctByteSize=6;
+                    break;
+                case 1:
+                    lctByteSize=12;
+                    break;
+                case 2:
+                    lctByteSize=24;
+                    break;
+                case 3:
+                    lctByteSize=48;
+                    break;
+                case 4:
+                    lctByteSize=96;
+                    break;
+                case 5:
+                    lctByteSize=192;
+                    break;
+                case 6:
+                    lctByteSize=384;
+                    break;
+                case 7:
+                    lctByteSize=768;
+                    break;
+                default:
+                    lctByteSize=768
+                    break;
+            }
+
+            imgDescArray.push({"index":rawImgDescIndeces[i],"bytes":bytes, "local color table":localCT, "local color table size":lctByteSize})   
+        }        
+    }
+
+    return imgDescArray
+}
 // returns local color table if exists
-// function analyzeLCT(data, lctBool,lctByteSize){
-//     if (lctBool) {
-//         return data.slice(12,12+lctByteSizeByteSize+1)
-//     } else {
-//         return null
-//     }
-// }
+function analyzeLCT(data, lctBool,lctByteSize){
+    if (lctBool) {
+        return data.slice(12,12+lctByteSize+1)
+    } else {
+        return null
+    }
+}
 
 // returns image data
 // function analyzeImageData(data, start,end) {
