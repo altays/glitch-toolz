@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "node index.js test 256.gif 256",
-    "analyze": "node index.js analyze 256.gif 256-analyzed.txt",
-    "compile": "node index.js compile 256-analyzed 256-reconstructed.gif"
+    "analyze-gif": "node index.js analyze 256.gif 256-analyzed.txt",
+    "analyze-jpg": "node index.js IMG_3141.JPG 3141.txt",
+    "compile-gif": "node index.js compile 256-analyzed 256-reconstructed.gif",
+    "compile-jpg": "node index.js compile 3141 256-reconstructed.gif"
   },
   "keywords": [
     "glitch",
