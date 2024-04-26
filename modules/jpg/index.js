@@ -13,7 +13,13 @@ exports.analyzeJPG = data => {
 
     let huffmanTables = analyzeHuffmans(data)
 
-    console.log(huffmanTables)
+    let sosData = analyzeSOS(data)
+    let endOfSOS = sosData[2].endofframe
+
+
+    let imageData = analyzeImageData(data,sosData[2].endofframe)
+
+    console.log(imageData)
 }
 
 function analyzeApp (input) {
@@ -25,11 +31,11 @@ function analyzeApp (input) {
 }
 
 function findFillData (input, endOfHead, startOfQuant) {
-    return input.substring(endOfHead, startOfQuant)
+    return [{'bytes':input.substring(endOfHead, startOfQuant)}]
 }
 
 function analyzeQuantTable (input) {
-    let quantTables = []
+    let quantTables = [{'section':'quanttables'}]
     let quantTableIDs = utilities.getIndicesOf('ffdb0043',input,true)
 
     for (let i = 0; i < quantTableIDs.length; i++) {
@@ -44,13 +50,13 @@ function analyzeSOF(input) {
 
     let sofData = input.substring(parseInt(sofTableIDs),parseInt(sofTableIDs)+38)
 
-    return sofData
+    return [{'section':'SOF'},{'bytes':sofData}]
 }
 
 function analyzeHuffmans(input) {
     let huffmanIDs = utilities.getIndicesOf('ffc400',input,true)
 
-    let huffmanTables = []
+    let huffmanTables = [{'section':'huffman table'}]
     
     for (let i = 0; i < huffmanIDs.length; i++) {
         let tableID = parseInt(huffmanIDs[i])
@@ -64,11 +70,20 @@ function analyzeHuffmans(input) {
 }
 
 function analyzeSOS(input) {
+    let sosData;
+    let sosID = parseInt(utilities.getIndicesOf('ffda000c',input,false))
+    let sosSize = 2 * parseInt(utilities.hex2bin('000c'),2)
+    
+    sosData = input.substring(sosID,sosID+sosSize)
 
+    console.log(sosData)
+    return [{'section':'SOS'},{'bytes':sosData},{'endofframe':sosID+sosSize}]
 }
 
-function analyzeImageData(input) {
+function analyzeImageData(input,start) {
+    let terminatorID = utilities.getIndicesOf('ffd9',input,false)
 
+    return terminatorID
 }
 // Corkami's breakdown: https://github.com/corkami/formats/blob/master/image/jpeg.md
 
