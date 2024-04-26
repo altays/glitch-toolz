@@ -81,38 +81,12 @@ function analyzeHeader(data) {
     return ["header",{"bytes":data.slice(0,12)}]
 }
     
-function hex2bin(hex){
-    hex = hex.replace("0x", "").toLowerCase();
-    let out = "";
-    for(var c of hex) {
-        switch(c) {
-            case '0': out += "0000"; break;
-            case '1': out += "0001"; break;
-            case '2': out += "0010"; break;
-            case '3': out += "0011"; break;
-            case '4': out += "0100"; break;
-            case '5': out += "0101"; break;
-            case '6': out += "0110"; break;
-            case '7': out += "0111"; break;
-            case '8': out += "1000"; break;
-            case '9': out += "1001"; break;
-            case 'a': out += "1010"; break;
-            case 'b': out += "1011"; break;
-            case 'c': out += "1100"; break;
-            case 'd': out += "1101"; break;
-            case 'e': out += "1110"; break;
-            case 'f': out += "1111"; break;
-            default: return "";
-        }
-    }
-    return out;
-}
 
 function analyzeLSD(data){
     let logicalSD = data.slice(12,26)
     let packedField = logicalSD.slice(8,10)
     let backgroundColorIndex = logicalSD.slice(10,12)
-    let packedFieldBin = hex2bin(packedField)
+    let packedFieldBin = utilities.hex2bin(packedField)
     let globalCTBool = utilities.binaryToBool(packedFieldBin[0])
     let globalCTSize = parseInt(packedFieldBin.slice(5,8),2)
     let gctByteSize;
@@ -162,7 +136,7 @@ function analyzeGCT(data, gctBool,gctByteSize){
 function analyzeAppExt(data, start) {
     // let appExt = data.slice(start,start+20)
 
-    // let hex = hex2bin(appExt)
+    // let hex = utilities.hex2bin(appExt)
     // let appExt = data.search("21FF")
     // console.log(appExt)
     // is 19 bytes long
@@ -181,7 +155,7 @@ function analyzeAppExt(data, start) {
 // returns GCE, specific bytes for later usage
 function analyzeGCE(data) {
     // let gceBytes = data.slice(gceStart, 9)
-    // let gcePackedField = parseInt(hex2bin(gceBytes[4]),2)
+    // let gcePackedField = parseInt(utilities.hex2bin(gceBytes[4]),2)
     // let delayTime = gceBytes.slice(5,7)
     // let transparentColorIndex = gceBytes(7)
     // need a better way to find this section
@@ -207,7 +181,7 @@ function countImageDesc(data){
         
         if (bytes.substring(0,10)=="2c00000000") {
             
-            let packedField = hex2bin(bytes.slice(18,20))
+            let packedField = utilities.hex2bin(bytes.slice(18,20))
             let localCT = utilities.binaryToBool(packedField[0])
             let lctSize = parseInt(packedField.slice(5,8),2)
             let lctByteSize;
