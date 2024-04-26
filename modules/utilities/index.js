@@ -63,6 +63,7 @@ exports.compile = (input, output, format) => {
 
     fs.readdirSync(folderPath).forEach(filename => {
         const hexData = fs.readFileSync(path.join(folderPath,filename), 'hex');
+        console.log(filename)
         allData += hexData
     });
     
@@ -88,8 +89,8 @@ function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
                 break;
             case 'jpg':
                 let jpgData = jpg.analyzeJPG(dataFile)
-                // console.log(jpgData[0])
-
+                
+                // consider abstracting this for other formats
                 for (let i = 0; i < jpgData.length; i++) {
                    let index = jpgData[i].index;
                    let section = jpgData[i].section
@@ -98,8 +99,6 @@ function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
                    fs.writeFileSync(path.join(dataFolderPathInfo,`${fileName}.txt`),data,"hex")
                    console.log(fileName)
                 }
-
-                fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
                                 
                 break;
             default:

@@ -24,19 +24,19 @@ exports.analyzeJPG = data => {
     // continue adding to reutrn object - huffman tables
     
     return [
-        {"index":1,"section":"SOI","data":startOI},
-        {"index":2,"section":"APP","data":appHeader.bytes},
-        {"index":3,"section":"Fill","data":fillerData[0].bytes},
-        {"index":4,"section":"Quant1","data":quantTables[1].bytes},
-        {"index":5,"section":"Quant2","data":quantTables[2].bytes},
-        {"index":6,"section":"SOF","data":frameData[1].bytes},
-        {"index":7,"section":"Huff1","data":huffmanTables[1].bytes},
-        {"index":8,"section":"Huff2","data":huffmanTables[2].bytes},
-        {"index":9,"section":"Huff3","data":huffmanTables[3].bytes},
-        {"index":10,"section":"Huff4","data":huffmanTables[4].bytes},
-        {"index":11,"section":"SOS","data":sosData[1].bytes},
-        {"index":12,"section":"ImgData","data":imageData[0].imgbytes},
-        {"index":13,"section":"terminator","data":imageData[1].terminator}]
+        {"index":'a',"section":"SOI","data":startOI},
+        {"index":'b',"section":"APP","data":appHeader.bytes},
+        {"index":'c',"section":"Fill","data":fillerData[0].bytes},
+        {"index":'d',"section":"Quant1","data":quantTables[1].bytes},
+        {"index":'e',"section":"Quant2","data":quantTables[2].bytes},
+        {"index":'f',"section":"SOF","data":frameData[1].bytes},
+        {"index":'g',"section":"Huff1","data":huffmanTables[1].bytes},
+        {"index":'h',"section":"Huff2","data":huffmanTables[2].bytes},
+        {"index":'i',"section":"Huff3","data":huffmanTables[3].bytes},
+        {"index":'j',"section":"Huff4","data":huffmanTables[4].bytes},
+        {"index":'k',"section":"SOS","data":sosData[1].bytes},
+        {"index":'l',"section":"ImgData","data":imageData[0].imgbytes},
+        {"index":'m',"section":"terminator","data":imageData[1].terminator}]
 }
 
 function analyzeApp (input) {
