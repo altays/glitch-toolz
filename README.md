@@ -5,6 +5,7 @@ Currently:
 * compiles back into functioning image files
 
 Current To Dos
+* clean up JPG analysis code
 * refine duplicate name checking / name defaulting
 * add duplicate name checking to file compiling
 * develop out GIF processing - extracting color tables, etc.
