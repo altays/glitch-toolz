@@ -7,7 +7,10 @@ exports.analyzeJPG = data => {
 
     let quantTables = analyzeQuantTable(data)
 
-    let fillerData = findFillData(data,appHeader.endofhead,quantTables[0].startIndex)
+    let fillerData = findFillData(data,parseInt(appHeader.endofhead)+4,parseInt(quantTables[1].startIndex))
+
+    // two extra bytes are ending up at the front - where is that coming from?
+    // going until the end of the file - needs to stop at the beginnign of the quantization tables
 
     let frameData = analyzeSOF(data)
 
@@ -16,10 +19,24 @@ exports.analyzeJPG = data => {
     let sosData = analyzeSOS(data)
     let endOfSOS = sosData[2].endofframe
 
-
     let imageData = analyzeImageData(data,sosData[2].endofframe)
 
-    console.log(imageData)
+    // continue adding to reutrn object - huffman tables
+    
+    return [
+        {"index":1,"section":"SOI","data":startOI},
+        {"index":2,"section":"APP","data":appHeader.bytes},
+        {"index":3,"section":"Fill","data":fillerData[0].bytes},
+        {"index":4,"section":"Quant1","data":quantTables[1].bytes},
+        {"index":5,"section":"Quant2","data":quantTables[2].bytes},
+        {"index":6,"section":"SOF","data":frameData[1].bytes},
+        {"index":7,"section":"Huff1","data":huffmanTables[1].bytes},
+        {"index":8,"section":"Huff2","data":huffmanTables[2].bytes},
+        {"index":9,"section":"Huff3","data":huffmanTables[3].bytes},
+        {"index":10,"section":"Huff4","data":huffmanTables[4].bytes},
+        {"index":11,"section":"SOS","data":sosData[1].bytes},
+        {"index":12,"section":"ImgData","data":imageData[0].imgbytes},
+        {"index":13,"section":"terminator","data":imageData[1].terminator}]
 }
 
 function analyzeApp (input) {
@@ -76,14 +93,21 @@ function analyzeSOS(input) {
     
     sosData = input.substring(sosID,sosID+sosSize)
 
-    console.log(sosData)
+    // console.log(sosData)
     return [{'section':'SOS'},{'bytes':sosData},{'endofframe':sosID+sosSize}]
 }
 
 function analyzeImageData(input,start) {
-    let terminatorID = utilities.getIndicesOf('ffd9',input,false)
+    let fileLen = parseInt(input.length)/2 
 
-    return terminatorID
+    let termStart = fileLen - 2
+
+    let terminator = input.substring(termStart*2,fileLen*2)
+
+    let imgData = input.substring(parseInt(start),termStart*2)
+    // let imgData = input.substring(parseInt(start),parseInt(start)+16 )
+
+    return [{"imgbytes":imgData},{"terminator":terminator}]
 }
 // Corkami's breakdown: https://github.com/corkami/formats/blob/master/image/jpeg.md
 

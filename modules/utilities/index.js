@@ -87,8 +87,20 @@ function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
                 fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
                 break;
             case 'jpg':
-                jpg.analyzeJPG(dataFile)
+                let jpgData = jpg.analyzeJPG(dataFile)
+                // console.log(jpgData[0])
+
+                for (let i = 0; i < jpgData.length; i++) {
+                   let index = jpgData[i].index;
+                   let section = jpgData[i].section
+                   let data = jpgData[i].data
+                   let fileName = `${index}-${section}`
+                   fs.writeFileSync(path.join(dataFolderPathInfo,`${fileName}.txt`),data,"hex")
+                   console.log(fileName)
+                }
+
                 fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
+                                
                 break;
             default:
                 console.log('no processing')
