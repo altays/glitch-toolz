@@ -15,7 +15,6 @@ exports.analyze = (input, output, format) => {
     let pathIncrement = 0;
     let folders = []
 
-
     fs.readdir(dataPath, function (err, files) {
         if (err) {
             return console.log('Unable to scan directory: ' + err);
@@ -24,7 +23,6 @@ exports.analyze = (input, output, format) => {
         let fileNameCheck = files.includes(outputName)
 
         if (!fileNameCheck) {
-
             try {
                 fs.mkdirSync(dataFolderPath)
                 formatSelect(format,data,output,dataFolderPath)
@@ -33,12 +31,10 @@ exports.analyze = (input, output, format) => {
             }
 
         } else {
-        
             while (fileNameCheck == true) {
                 outputName+= pathIncrement
                 fileNameCheck = files.includes(outputName)
-                pathIncrement++
-                
+                pathIncrement++ 
             }
 
             dataFolderPath=path.join(dataPath,outputName);
@@ -50,31 +46,26 @@ exports.analyze = (input, output, format) => {
                 console.log(err)
             }
         }
- 
     }); 
- 
 }
 
-// read a folder, read the data from each file, add data to a variable, write the data to a file
 exports.compile = (input, output, format) => {
     let allData = ""
 
     let folderPath = path.join(dataPath,input)
+    let filePath = path.join(outputPath,`${output}`)
 
+    if (fs.existsSync(filePath)) { 
+        filePath = path.join(outputPath,`${parseInt(Date.now()/1000)}-${output}`)
+    }
+    
     fs.readdirSync(folderPath).forEach(filename => {
         const hexData = fs.readFileSync(path.join(folderPath,filename), 'hex');
         console.log(filename)
         allData += hexData
     });
     
-    fs.writeFileSync(path.join(outputPath,`${output}`),allData,"hex")
-}
-
-exports.defaultValue = (value, defaultValue) => {
-    const num = value ? value.slice(-3) : defaultValue;
-    // const firstVal = value.indexOf('.')
-    // console.log('from function',firstVal)
-    return num;
+    fs.writeFileSync(filePath,allData,"hex")
 }
 
 function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
@@ -89,17 +80,7 @@ function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
                 break;
             case 'jpg':
                 let jpgData = jpg.analyzeJPG(dataFile)
-                
-                // consider abstracting this for other formats
-                for (let i = 0; i < jpgData.length; i++) {
-                   let index = jpgData[i].index;
-                   let section = jpgData[i].section
-                   let data = jpgData[i].data
-                   let fileName = `${index}-${section}`
-                   fs.writeFileSync(path.join(dataFolderPathInfo,`${fileName}.txt`),data,"hex")
-                   console.log(fileName)
-                }
-                                
+                writeFileLoop(jpgData,dataFolderPathInfo)                                
                 break;
             default:
                 console.log('no processing')
@@ -109,6 +90,17 @@ function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
     } catch (err) {
         console.log(err)
     }
+}
+
+function writeFileLoop(data,location) {
+    let info = data
+    for (let i = 0; i < info.length; i++) {
+        let index = info[i].index;
+        let section = info[i].section
+        let data = info[i].data
+        let fileName = `${index}-${section}`
+        fs.writeFileSync(path.join(location,`${fileName}.txt`),data,"hex")
+     }
 }
 
 exports.binaryToBool = (value) => {

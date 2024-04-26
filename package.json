@@ -6,9 +6,9 @@
   "scripts": {
     "test": "node index.js test 256.gif 256",
     "analyze-gif": "node index.js analyze 256.gif 256-analyzed.txt",
-    "analyze-jpg": "node index.js analyze IMG_3052.JPG 3052.txt",
+    "analyze-jpg": "node index.js analyze IMG_3141.JPG 3141.txt",
     "compile-gif": "node index.js compile 256-analyzed 256-reconstructed.gif",
-    "compile-jpg": "node index.js compile 3052 3052-reconstructed.jpg"
+    "compile-jpg": "node index.js compile 31410 3141-reconstructed.jpg"
   },
   "keywords": [
     "glitch",

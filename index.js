@@ -6,7 +6,6 @@ const path = require('node:path');
 
 let inputFormat, outputFormat;
 
-
 switch (route) {
     case 'analyze':
         inputFormat = utilities.defaultValue(input, null)
@@ -27,23 +26,3 @@ switch (route) {
     default:
         console.log(`Please indicate a route (analyze, compile), an input file, and an output file. Input and output files do not need routes. Or, check out the package.json file for test scripts`);
 }
-
-// MVP3 - processing
-
-
-
-// JPEG processing
-// // 1 - break file into chunks - save NOTABLE individual sections as txt files in a folder (including other data that is necessary but can't be manipulated)
-// // // head
-// // // huffman tables, quantization tables, SOS markers, body
-// // // all other data as needed
-// // 2 - recompile jpeg from saved data
-// // 3 - manipualting sections
-    // // // huffman tables - lots of stuff
-    // // // quantization tables
-    // // // SOS markers
-    // // // body - remixing
-
-// AVI processing
-// // 1 - break file into chunks, save NOTABLE individual sections as txt files in a folder (including other data that is necessary but can't be manipulated)
-// // 2
