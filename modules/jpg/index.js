@@ -8,23 +8,23 @@ exports.analyzeJPG = data => {
     let frameData = analyzeSOF(data)
     let huffmanTables = analyzeHuffmans(data)
     let sosData = analyzeSOS(data)
-    let endOfSOS = sosData[2].endofframe
+    let endOfSOS = sosData.endofframe
     let imageData = analyzeImageData(data,endOfSOS)
     
     return [
         {"index":'a',"section":"SOI","data":startOI},
         {"index":'b',"section":"APP","data":appHeader.bytes},
-        {"index":'c',"section":"Fill","data":fillerData[0].bytes},
+        {"index":'c',"section":"Fill","data":fillerData.bytes},
         {"index":'d',"section":"Quant1","data":quantTables[1].bytes},
         {"index":'e',"section":"Quant2","data":quantTables[2].bytes},
-        {"index":'f',"section":"SOF","data":frameData[1].bytes},
+        {"index":'f',"section":"SOF","data":frameData.bytes},
         {"index":'g',"section":"Huff1","data":huffmanTables[1].bytes},
         {"index":'h',"section":"Huff2","data":huffmanTables[2].bytes},
         {"index":'i',"section":"Huff3","data":huffmanTables[3].bytes},
         {"index":'j',"section":"Huff4","data":huffmanTables[4].bytes},
-        {"index":'k',"section":"SOS","data":sosData[1].bytes},
-        {"index":'l',"section":"ImgData","data":imageData[0].imgbytes},
-        {"index":'m',"section":"terminator","data":imageData[1].terminator}
+        {"index":'k',"section":"SOS","data":sosData.bytes},
+        {"index":'l',"section":"ImgData","data":imageData.imgbytes},
+        {"index":'m',"section":"terminator","data":imageData.terminator}
     ]
 }
 
@@ -37,7 +37,7 @@ function analyzeApp (input) {
 }
 
 function findFillData (input, endOfHead, startOfQuant) {
-    return [{'bytes':input.substring(endOfHead, startOfQuant)}]
+    return {'bytes':input.substring(endOfHead, startOfQuant)}
 }
 
 function analyzeQuantTable (input) {
@@ -55,7 +55,7 @@ function analyzeSOF(input) {
     let sofTableIDs = utilities.getIndicesOf('ffc00011',input,true)
     let sofData = input.substring(parseInt(sofTableIDs),parseInt(sofTableIDs)+38)
 
-    return [{'section':'SOF'},{'bytes':sofData}]
+    return {'section':'SOF','bytes':sofData}
 }
 
 function analyzeHuffmans(input) {
@@ -78,7 +78,7 @@ function analyzeSOS(input) {
     let sosSize = 2 * parseInt(utilities.hex2bin('000c'),2)    
     sosData = input.substring(sosID,sosID+sosSize)
 
-    return [{'section':'SOS'},{'bytes':sosData},{'endofframe':sosID+sosSize}]
+    return {'section':'SOS','bytes':sosData,'endofframe':sosID+sosSize}
 }
 
 function analyzeImageData(input,start) {
@@ -87,5 +87,5 @@ function analyzeImageData(input,start) {
     let terminator = input.substring(termStart*2,fileLen*2)
     let imgData = input.substring(parseInt(start),termStart*2)
 
-    return [{"imgbytes":imgData},{"terminator":terminator}]
+    return {"imgbytes":imgData,"terminator":terminator}
 }

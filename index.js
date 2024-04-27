@@ -19,6 +19,7 @@ switch (route) {
         break;
     case 'test':
         console.log(path.dirname('.'))
+        
     // case 'scrambling':
     //     console.log(`scrambling ${input} and saving to ${output}`);
     //     console.log(inputFormat)

@@ -75,10 +75,14 @@ exports.gifAnalyze = (data) => {
     // let trailer = data.slice()
 
     // then, create separate files
+    return [
+
+
+    ]
 }
 
 function analyzeHeader(data) {
-    return ["header",{"bytes":data.slice(0,12)}]
+    return [{"section":"a-header"},{"bytes":data.slice(0,12)}]
 }
     
 
@@ -121,12 +125,12 @@ function analyzeLSD(data){
             break;
     }
 
-    return ["logicalScreenDesc",{"bytes":logicalSD},{"global colortable bool":globalCTBool}, {"global CT Size":globalCTSize},{"GCT Byte Size":gctByteSize},{"background color index":backgroundColorIndex}]
+    return [{"section":"b-logicalScreenDesc"},{"bytes":logicalSD},{"global colortable bool":globalCTBool}, {"global CT Size":globalCTSize},{"GCT Byte Size":gctByteSize},{"background color index":backgroundColorIndex}]
 }
 
 function analyzeGCT(data, gctBool,gctByteSize){
     if (gctBool == "true") {
-        return data.slice(12,12+parseInt(gctByteSize))
+        return [{"section":"c-GCT"},{"bytes":data.slice(12,12+parseInt(gctByteSize))}]
     } else {
         return null
     }

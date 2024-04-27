@@ -54,7 +54,7 @@ exports.compile = (input, format) => {
     let outputName = `${input}-compiled`
 
     let folderPath = path.join(dataPath,input)
-    let filePath = path.join(outputPath,`${outputName}`)
+    let filePath = path.join(outputPath,`${outputName}.${format}`)
 
     if (fs.existsSync(filePath)) { 
         filePath = path.join(outputPath,`${parseInt(Date.now()/1000)}-${outputName}.${format}`)
