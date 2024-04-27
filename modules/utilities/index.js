@@ -8,12 +8,11 @@ let dataPath = path.join(homePath,'/data/')
 let inputPath = path.join(homePath,'/input/')
 let outputPath = path.join(homePath,'/output/')
 
-exports.analyze = (input, output, format) => {   
+exports.analyze = (input, format) => {   
     const data = fs.readFileSync(path.join(inputPath,`${input}`), "hex");
-    let outputName = output.slice(0,-4)
+    let outputName = input.slice(0,-4)
     let dataFolderPath = path.join(dataPath,outputName);
     let pathIncrement = 0;
-    let folders = []
 
     fs.readdir(dataPath, function (err, files) {
         if (err) {
@@ -25,13 +24,14 @@ exports.analyze = (input, output, format) => {
         if (!fileNameCheck) {
             try {
                 fs.mkdirSync(dataFolderPath)
-                formatSelect(format,data,output,dataFolderPath)
+                formatSelect(format,data,outputName,dataFolderPath)
             } catch (err) {
                 console.log(err)
             }
 
         } else {
             while (fileNameCheck == true) {
+                // refine this - adds a number to end of folder name
                 outputName+= pathIncrement
                 fileNameCheck = files.includes(outputName)
                 pathIncrement++ 
@@ -41,7 +41,7 @@ exports.analyze = (input, output, format) => {
 
             try {
                 fs.mkdirSync(dataFolderPath)
-                formatSelect(format,data,output,dataFolderPath)
+                formatSelect(format,data,outputName,dataFolderPath)
             } catch (err) {
                 console.log(err)
             }
@@ -49,23 +49,28 @@ exports.analyze = (input, output, format) => {
     }); 
 }
 
-exports.compile = (input, output, format) => {
+exports.compile = (input, format) => {
     let allData = ""
+    let outputName = `${input}-compiled`
 
     let folderPath = path.join(dataPath,input)
-    let filePath = path.join(outputPath,`${output}`)
+    let filePath = path.join(outputPath,`${outputName}`)
 
     if (fs.existsSync(filePath)) { 
-        filePath = path.join(outputPath,`${parseInt(Date.now()/1000)}-${output}`)
+        filePath = path.join(outputPath,`${parseInt(Date.now()/1000)}-${outputName}.${format}`)
     }
     
     fs.readdirSync(folderPath).forEach(filename => {
         const hexData = fs.readFileSync(path.join(folderPath,filename), 'hex');
-        console.log(filename)
         allData += hexData
     });
     
     fs.writeFileSync(filePath,allData,"hex")
+}
+
+exports.defaultValue = (value, defaultValue) => {
+    const num = value ? value.slice(-3) : defaultValue;
+    return num;
 }
 
 function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
