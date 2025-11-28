@@ -68,47 +68,61 @@ exports.compile = (input, format) => {
     fs.writeFileSync(filePath,allData,"hex")
 }
 
-exports.scramble = (input, format) => {   
+exports.bending = (input, format, options) => {   
     
-    // analyze code
-    const data = fs.readFileSync(path.join(inputPath,`${input}`), "hex");
-    let outputName = input.slice(0,-4)
-    let dataFolderPath = path.join(dataPath,outputName);
-    let pathIncrement = 0;
+    // setting up for bending JPGs currently
+        // will need to break this out into modules after the jpg functionality is worked out
+    // target bending data folder
+    // based on option, bend the table, write directly to the txt file
 
-    fs.readdir(dataPath, function (err, files) {
-        if (err) {
-            return console.log('Unable to scan directory: ' + err);
-        } 
-        
-        let fileNameCheck = files.includes(outputName)
+    let optionsArr = options.split('');
+    let folderPath = path.join(dataPath,input)
+    let table = ""
+    let filePath
+    let tableA, tableB, tableC, tableD
 
-        if (!fileNameCheck) {
-            try {
-                fs.mkdirSync(dataFolderPath)
-                formatSelectScramble(format,data,outputName,dataFolderPath)
-            } catch (err) {
-                console.log(err)
-            }
-
-        } else {
-            while (fileNameCheck == true) {
-                // refine this - adds a number to end of folder name
-                outputName+= pathIncrement
-                fileNameCheck = files.includes(outputName)
-                pathIncrement++ 
-            }
-
-            dataFolderPath=path.join(dataPath,outputName);
-
-            try {
-                fs.mkdirSync(dataFolderPath)
-                formatSelectScramble(format,data,outputName,dataFolderPath)
-            } catch (err) {
-                console.log(err)
-            }
+    for (let i = 0; i < optionsArr.length;i++) {
+        switch (optionsArr[i]) {
+            case 'q':
+                // console.log('quant-tables')
+                tableA="d-Quant1.txt"
+                tableB="e-Quant2.txt"
+                jpg.bendQuant(tableA, tableB)
+                break;
+            case 'h':
+                // console.log('huffman-tables')
+                tableA="g-Huff1.txt"
+                tableB="h-Huff2.txt"
+                tableC="i-Huff3.txt"
+                tableD="j-Huff4.txt"
+                jpg.bendHuffman(tableA,tableB,tableC,tableD)
+                break;
+            case 'c':
+                // console.log('sos-tables-components')
+                tableA="k-SOS.txt"
+                jpg.bendSOSComponents(tableA)
+                break;
+            case 's':
+                // console.log('sos-tables-spectral')
+                tableA="k-SOS.txt"
+                jpg.bendSOSSpectralSelection(tableA)
+                break;
+            case 'b':
+                // console.log('sos-tables-approx-bites')
+                tableA="k-SOS.txt"
+                jpg.bendSOSSpectralSelection(tableA)
+                break;
+            case 'i':
+                // console.log('image-data')
+                tableA="l-imgData.txt"
+                jpg.bendImageBody(tableA)
+                break;
+            default:
+                break;
         }
-    }); 
+    }
+
+
 }
 
 
@@ -140,7 +154,7 @@ function formatSelectAnalyze(dataFormat, dataFile, dataOutName, dataFolderPathIn
     }
 }
 
-function formatSelectScramble(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
+function formatSelectBend(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
     let fileFormat = dataFormat.toLowerCase()
     
     try {
@@ -150,7 +164,7 @@ function formatSelectScramble(dataFormat, dataFile, dataOutName, dataFolderPathI
                 // fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
                 break;
             case 'jpg':
-                let jpgData = jpg.scrambleJPG(dataFile)
+                let jpgData = jpg.bendJPG(dataFile)
                 writeFileLoop(jpgData,dataFolderPathInfo)                                
                 break;
             default:

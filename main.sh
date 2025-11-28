@@ -15,6 +15,10 @@ elif [ "$1" = "jpgCompile" ]
 then
     echo "route jpg compile" 
     node index.js compile IMG_3141-bending jpg
+elif [ "$1" = "jpgBending" ]
+then
+    echo "route jpg bending" 
+    node index.js bending IMG_3141-bending jpg qhcsbi
 elif [ "$1" = "i" ]
 then
     echo "route initialize" 
