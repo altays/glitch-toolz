@@ -85,36 +85,38 @@ exports.bending = (input, format, options) => {
         switch (optionsArr[i]) {
             case 'q':
                 // console.log('quant-tables')
-                tableA="d-Quant1.txt"
-                tableB="e-Quant2.txt"
+                tableA = path.join(folderPath,"d-Quant1.txt")
+                tableB = path.join(folderPath,"e-Quant2.txt")
+                // tableA = "d-Quant1.txt"
+                // tableB = "e-Quant2.txt"
                 jpg.bendQuant(tableA, tableB)
                 break;
             case 'h':
                 // console.log('huffman-tables')
-                tableA="g-Huff1.txt"
-                tableB="h-Huff2.txt"
-                tableC="i-Huff3.txt"
-                tableD="j-Huff4.txt"
+                tableA = path.join(folderPath,"g-Huff1.txt")
+                tableB = path.join(folderPath,"h-Huff2.txt")
+                tableC = path.join(folderPath,"i-Huff3.txt")
+                tableD = path.join(folderPath,"j-Huff4.txt")
                 jpg.bendHuffman(tableA,tableB,tableC,tableD)
                 break;
             case 'c':
                 // console.log('sos-tables-components')
-                tableA="k-SOS.txt"
+                tableA = path.join(folderPath,"k-SOS.txt")
                 jpg.bendSOSComponents(tableA)
                 break;
             case 's':
                 // console.log('sos-tables-spectral')
-                tableA="k-SOS.txt"
+                tableA = path.join(folderPath,"k-SOS.txt")
                 jpg.bendSOSSpectralSelection(tableA)
                 break;
             case 'b':
                 // console.log('sos-tables-approx-bites')
-                tableA="k-SOS.txt"
+                tableA = path.join(folderPath,"k-SOS.txt")
                 jpg.bendSOSSpectralSelection(tableA)
                 break;
             case 'i':
                 // console.log('image-data')
-                tableA="l-imgData.txt"
+                tableA = path.join(folderPath,"l-imgData.txt")
                 jpg.bendImageBody(tableA)
                 break;
             default:
@@ -122,9 +124,7 @@ exports.bending = (input, format, options) => {
         }
     }
 
-
 }
-
 
 exports.defaultValue = (value, defaultValue) => {
     const num = value ? value.slice(-3) : defaultValue;

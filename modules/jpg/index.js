@@ -1,4 +1,5 @@
 const utilities = require('../utilities');
+const fs = require('node:fs');
 
 exports.analyzeJPG = data => {
     let startOI = data.substring(0,4)
@@ -94,15 +95,33 @@ function analyzeImageData(input,start) {
 
 exports.bendQuant = (tableA, tableB) =>  {
 
+    let tableArr = [tableA, tableB]
     console.log(tableA)
     console.log(tableB)
-    // if destination is 00, change to 01
-    // if destination is 01, change to 00
-    // loop over table
-        // read text file
-        // analyze text file
-        // do the bending
-        // save over text file
+
+    for (let i = 0; i < tableArr.length; i++) {
+
+        let table=tableArr[i]
+
+        const data = fs.readFileSync(table,"utf-8");
+        const tempData = data.split("")
+
+        // target destination, if 0 swap to 1; if 1 swap to 0
+        // console.log(data)
+        // console.log(data[17])
+        if (data[17]==1){
+            // console.log("1 to 0")
+            tempData[17]=0
+        } else {
+            // console.log("0 to 1")
+            tempData[17]=1
+        }
+
+        console.log(tempData.join(""))
+        
+        // fs.writeFileSync(table,tempData.join(""))
+
+    }
 }
 
 // Huff
