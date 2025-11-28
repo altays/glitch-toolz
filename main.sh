@@ -18,10 +18,15 @@ then
 elif [ "$1" = "jpgBending" ]
 then
     echo "route jpg bending" 
-    node index.js bending IMG_3141-bending jpg b
+    node index.js bending IMG_3141-bending jpg qsb
 elif [ "$1" = "jpgBendingCompile" ]
 then
     echo "route jpg bendingcompile" 
+    node index.js compile IMG_3141-bending jpg
+elif [ "$1" = "jpgBendingAndCompile" ]
+then
+    echo "route jpg bendingcompile"
+    node index.js bending IMG_3141-bending jpg qsb
     node index.js compile IMG_3141-bending jpg
 elif [ "$1" = "i" ]
 then

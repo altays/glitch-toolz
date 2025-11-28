@@ -76,7 +76,7 @@ function analyzeHuffmans(input) {
 function analyzeSOS(input) {
     let sosData;
     let sosID = parseInt(utilities.getIndicesOf('ffda000c',input,false))
-    let sosSize = (2 * parseInt(utilities.hex2bin('000c'),2) ) +2   
+    let sosSize = (2 * parseInt(utilities.hex2bin('000c'),2) ) + 4  
     sosData = input.substring(sosID,sosID+sosSize)
 
     return {'section':'SOS','bytes':sosData,'endofframe':sosID+sosSize}
@@ -148,6 +148,8 @@ exports.bendHuffman = (tableA, tableB, tableC, tableD) => {
 
 exports.bendSOSComponents = (table,config) => {
 
+    // dig into this more - it's not working 100%
+
     const data = fs.readFileSync(table);
     let dataStr = data.toString('hex')
 
@@ -155,23 +157,91 @@ exports.bendSOSComponents = (table,config) => {
     let length=dataStr.substring(4,8)
     let componentCount=dataStr.substring(8,10)
     let components=dataStr.substring(10,22)
-    let spectralSelection=dataStr.substring(22,24)
-    let successiveApprox=dataStr.substring(24,26)
+    let spectralSelection=dataStr.substring(22,26)
+    let successiveApprox=dataStr.substring(26,28)
 
-    console.log('whole string: ', dataStr)
-    console.log('marker: ', marker)
-    console.log('length: ', length)
+    console.log(dataStr)
+
     console.log('componentCount: ', componentCount)
     console.log('components: ', components)
-    console.log('spectral selection: ', spectralSelection)
-    console.log('successive approx: ', successiveApprox)
+    let componentGroupSelA = components.substring(0,2)
+    let componentGroupTableA = components.substring(2,4)
+    let componentGroupSelB = components.substring(4,6)
+    let componentGroupTableB = components.substring(6,8)
+    let componentGroupSelC = components.substring(8,10)
+    let componentGroupTableC = components.substring(10,12)
 
+    let newComponentGroup = ""
+    let newComponentGroupA = ""
+    let newComponentGroupB = ""
+    let newComponentGroupC = ""
 
-    let newSOS = marker + length + componentCount + components + spectralSelection + successiveApprox
+    // randomly swap first 2 numbers of each component group
+    // console.log('og components', componentGroupSelA,componentGroupTableA,componentGroupSelB,componentGroupTableB,componentGroupSelC,componentGroupTableC)
+
+    let modChanceArr = [0,1,2]
+    let newArr = utilities.shuffle(modChanceArr)
+    console.log(newArr)
+
+    // console.log('mod chances', componentGroupAModChance, componentGroupBModChance, componentGroupCModChance)
+    
+    switch (newArr[0]) {
+    case 0:
+        newComponentGroupA = componentGroupSelA
+        break;
+    case 1:
+        newComponentGroupA = componentGroupSelB
+        break;
+    case 2:
+        newComponentGroupA = componentGroupSelC
+        break;
+    default:
+        console.log(`Invalid Num`);
+    }
+
+    switch (newArr[1]) {
+    case 0:
+        newComponentGroupB = componentGroupSelA
+        break;
+    case 1:
+        newComponentGroupB = componentGroupSelB
+        break;
+    case 2:
+        newComponentGroupB = componentGroupSelC
+        break;
+    default:
+        console.log(`Invalid Num`);
+    }
+
+    switch (newArr[2]) {
+    case 0:
+        newComponentGroupC = componentGroupSelA
+        break;
+    case 1:
+        newComponentGroupC = componentGroupSelB
+        break;
+    case 2:
+        newComponentGroupC = componentGroupSelC
+        break;
+    default:
+        console.log(`Invalid Num`);
+    }
+
+    newComponentGroup = newComponentGroupA + componentGroupTableA + newComponentGroupB + componentGroupTableB + newComponentGroupC + componentGroupTableC
+
+    console.log('new components', newComponentGroupA , componentGroupTableA , newComponentGroupB , componentGroupTableB , newComponentGroupC , componentGroupTableC)
+
+    let newSOS = marker + length + componentCount + newComponentGroup + spectralSelection + successiveApprox
     console.log(newSOS)
-
     
     fs.writeFileSync(table,newSOS,"hex")
+    // ffda
+    // 000c
+    // 03
+    // 0100
+    // 0311
+    // 0211
+    // 003f00
 
 }
 
@@ -183,21 +253,20 @@ exports.bendSOSSpectralSelection = table => {
     let length=dataStr.substring(4,8)
     let componentCount=dataStr.substring(8,10)
     let components=dataStr.substring(10,22)
-    let spectralSelection=dataStr.substring(22,24)
-    let successiveApprox=dataStr.substring(24,26)
+    let spectralSelection=dataStr.substring(22,26)
+    let successiveApprox=dataStr.substring(26,28)
 
-    console.log('whole string: ', dataStr)
-    console.log('marker: ', marker)
-    console.log('length: ', length)
-    console.log('componentCount: ', componentCount)
-    console.log('components: ', components)
-    console.log('spectral selection: ', spectralSelection)
-    console.log('successive approx: ', successiveApprox)
+    let newSpectralNumA = utilities.getRandomHexValue() + utilities.getRandomHexValue()
+    let newSpectralNumB = utilities.getRandomHexValue() + utilities.getRandomHexValue()
+    let newSpectralPair;
+    
+    if (parseInt(newSpectralNumA,16)>parseInt(newSpectralNumB,16)){
+        newSpectralPair = newSpectralNumB + newSpectralNumA
+    } else {
+        newSpectralPair = newSpectralNumA + newSpectralNumB
+    }
 
-
-    let newSOS = marker + length + componentCount + components + spectralSelection + successiveApprox
-    console.log(newSOS)
-
+    let newSOS = marker + length + componentCount + components + newSpectralPair + successiveApprox
     
     fs.writeFileSync(table,newSOS,"hex")
 }
@@ -210,8 +279,8 @@ exports.bendSOSApproxBytes = table => {
     let length=dataStr.substring(4,8)
     let componentCount=dataStr.substring(8,10)
     let components=dataStr.substring(10,22)
-    let spectralSelection=dataStr.substring(22,24)
-    let successiveApprox=dataStr.substring(24,26)
+    let spectralSelection=dataStr.substring(22,26)
+    let successiveApprox=dataStr.substring(26,28)
 
     let newSuccessApprox = ""
 

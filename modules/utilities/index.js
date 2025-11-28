@@ -57,7 +57,7 @@ exports.compile = (input, format) => {
     let filePath = path.join(outputPath,`${outputName}.${format}`)
 
     if (fs.existsSync(filePath)) { 
-        filePath = path.join(outputPath,`${parseInt(Date.now()/1000)}-${outputName}.${format}`)
+        filePath = path.join(outputPath,`${outputName}-${parseInt(Date.now()/1000)}.${format}`)
     }
     
     fs.readdirSync(folderPath).forEach(filename => {
@@ -243,6 +243,18 @@ exports.getRandomIntInclusive = (min, max) => {
 }
 
 exports.getRandomHexValue = () => {
-    let hexList = [0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F"]
+    let hexList = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"]
     return hexList[this.getRandomIntInclusive(0,hexList.length-1)]
+}
+
+exports.coinflip = (input1, input2) => {
+    if (this.getRandomIntInclusive(0,1) == 0) {
+        return input1
+    } else {
+        return input2
+    }
+}
+
+exports.shuffle = (array) => {   
+    return array.sort(() => Math.random() - 0.5);
 }
