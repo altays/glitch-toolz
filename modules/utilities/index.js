@@ -241,3 +241,8 @@ exports.getRandomIntInclusive = (min, max) => {
   const maxFloored = Math.floor(max);
   return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
 }
+
+exports.getRandomHexValue = () => {
+    let hexList = [0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F"]
+    return hexList[this.getRandomIntInclusive(0,hexList.length-1)]
+}

@@ -213,11 +213,10 @@ exports.bendSOSApproxBytes = table => {
     let spectralSelection=dataStr.substring(22,24)
     let successiveApprox=dataStr.substring(24,26)
 
-    let hexList = [0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F"]
     let newSuccessApprox = ""
 
     for (let i = 0; i < 2; i++) {
-        newSuccessApprox+= hexList[utilities.getRandomIntInclusive(0,hexList.length)]
+        newSuccessApprox+=utilities.getRandomHexValue()
     }
 
     let newSOS = marker + length + componentCount + components + spectralSelection + newSuccessApprox
