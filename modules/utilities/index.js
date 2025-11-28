@@ -24,7 +24,7 @@ exports.analyze = (input, format) => {
         if (!fileNameCheck) {
             try {
                 fs.mkdirSync(dataFolderPath)
-                formatSelect(format,data,outputName,dataFolderPath)
+                formatSelectAnalyze(format,data,outputName,dataFolderPath)
             } catch (err) {
                 console.log(err)
             }
@@ -41,7 +41,7 @@ exports.analyze = (input, format) => {
 
             try {
                 fs.mkdirSync(dataFolderPath)
-                formatSelect(format,data,outputName,dataFolderPath)
+                formatSelectAnalyze(format,data,outputName,dataFolderPath)
             } catch (err) {
                 console.log(err)
             }
@@ -68,23 +68,89 @@ exports.compile = (input, format) => {
     fs.writeFileSync(filePath,allData,"hex")
 }
 
+exports.scramble = (input, format) => {   
+    
+    // analyze code
+    const data = fs.readFileSync(path.join(inputPath,`${input}`), "hex");
+    let outputName = input.slice(0,-4)
+    let dataFolderPath = path.join(dataPath,outputName);
+    let pathIncrement = 0;
+
+    fs.readdir(dataPath, function (err, files) {
+        if (err) {
+            return console.log('Unable to scan directory: ' + err);
+        } 
+        
+        let fileNameCheck = files.includes(outputName)
+
+        if (!fileNameCheck) {
+            try {
+                fs.mkdirSync(dataFolderPath)
+                formatSelectScramble(format,data,outputName,dataFolderPath)
+            } catch (err) {
+                console.log(err)
+            }
+
+        } else {
+            while (fileNameCheck == true) {
+                // refine this - adds a number to end of folder name
+                outputName+= pathIncrement
+                fileNameCheck = files.includes(outputName)
+                pathIncrement++ 
+            }
+
+            dataFolderPath=path.join(dataPath,outputName);
+
+            try {
+                fs.mkdirSync(dataFolderPath)
+                formatSelectScramble(format,data,outputName,dataFolderPath)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    }); 
+}
+
+
 exports.defaultValue = (value, defaultValue) => {
     const num = value ? value.slice(-3) : defaultValue;
     return num;
 }
 
-function formatSelect(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
+function formatSelectAnalyze(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
     let fileFormat = dataFormat.toLowerCase()
     
     try {
         switch(fileFormat) {
             case 'gif':
-                // helper functions for GIF processing
                 gif.gifAnalyze(dataFile)
                 fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
                 break;
             case 'jpg':
                 let jpgData = jpg.analyzeJPG(dataFile)
+                writeFileLoop(jpgData,dataFolderPathInfo)                                
+                break;
+            default:
+                console.log('no processing')
+                // fs.writeFileSync(path.join(dataFolderPath,`${output}`),data,"hex");
+                break;
+            }               
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+function formatSelectScramble(dataFormat, dataFile, dataOutName, dataFolderPathInfo) {
+    let fileFormat = dataFormat.toLowerCase()
+    
+    try {
+        switch(fileFormat) {
+            case 'gif':
+                // gif.gifAnalyze(dataFile)
+                // fs.writeFileSync(path.join(dataFolderPathInfo,`${dataOutName}`),dataFile,"hex")
+                break;
+            case 'jpg':
+                let jpgData = jpg.scrambleJPG(dataFile)
                 writeFileLoop(jpgData,dataFolderPathInfo)                                
                 break;
             default:

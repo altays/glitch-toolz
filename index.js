@@ -9,21 +9,20 @@ let inputFormat, outputFormat;
 switch (route) {
     case 'analyze':
         inputFormat = utilities.defaultValue(input, null)
-        // console.log(`analyzing ${input} and saving to ${output}`);
         utilities.analyze(input, inputFormat)
         break;
     case 'compile':
         outputFormat = utilities.defaultValue(input, 'txt')
-        // console.log(`compiling ${input} and saving to ${output}`);
         utilities.compile(input, format)
         break;
     case 'test':
         console.log(path.dirname('.'))
         
-    // case 'scrambling':
-    //     console.log(`scrambling ${input} and saving to ${output}`);
-    //     console.log(inputFormat)
-    //     break;
+    case 'scramble':
+        // console.log(`scrambling ${input} and saving to ${output}`);
+        console.log(inputFormat)
+        utilities.scramble(input,format,options)
+        break;
     default:
         console.log(`Please indicate a route (analyze, compile), an input file, and an output file. Input and output files do not need routes. Or, check out the package.json file for test scripts`);
 }
