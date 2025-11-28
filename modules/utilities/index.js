@@ -112,7 +112,7 @@ exports.bending = (input, format, options) => {
             case 'b':
                 // console.log('sos-tables-approx-bites')
                 tableA = path.join(folderPath,"k-SOS.txt")
-                jpg.bendSOSSpectralSelection(tableA)
+                jpg.bendSOSApproxBytes(tableA)
                 break;
             case 'i':
                 // console.log('image-data')
@@ -234,4 +234,10 @@ exports.hex2bin = (hex) => {
         }
     }
     return out;
+}
+
+exports.getRandomIntInclusive = (min, max) => {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
+  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
 }

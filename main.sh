@@ -18,7 +18,7 @@ then
 elif [ "$1" = "jpgBending" ]
 then
     echo "route jpg bending" 
-    node index.js bending IMG_3141-bending jpg q
+    node index.js bending IMG_3141-bending jpg b
 elif [ "$1" = "jpgBendingCompile" ]
 then
     echo "route jpg bendingcompile" 

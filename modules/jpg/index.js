@@ -76,7 +76,7 @@ function analyzeHuffmans(input) {
 function analyzeSOS(input) {
     let sosData;
     let sosID = parseInt(utilities.getIndicesOf('ffda000c',input,false))
-    let sosSize = 2 * parseInt(utilities.hex2bin('000c'),2)    
+    let sosSize = (2 * parseInt(utilities.hex2bin('000c'),2) ) +2   
     sosData = input.substring(sosID,sosID+sosSize)
 
     return {'section':'SOS','bytes':sosData,'endofframe':sosID+sosSize}
@@ -96,30 +96,23 @@ function analyzeImageData(input,start) {
 exports.bendQuant = (tableA, tableB) =>  {
 
     let tableArr = [tableA, tableB]
-    console.log(tableA)
-    console.log(tableB)
 
     for (let i = 0; i < tableArr.length; i++) {
 
         let table=tableArr[i]
 
-        const data = fs.readFileSync(table,"utf-8");
-        const tempData = data.split("")
+        const data = fs.readFileSync(table);
+        let dataArr = data.toString('hex').split("")
 
-        // target destination, if 0 swap to 1; if 1 swap to 0
-        // console.log(data)
-        // console.log(data[17])
-        if (data[17]==1){
-            // console.log("1 to 0")
-            tempData[17]=0
+        if (dataArr[9]==1){
+            dataArr[9]=0
         } else {
-            // console.log("0 to 1")
-            tempData[17]=1
+            dataArr[9]=1
         }
 
-        console.log(tempData.join(""))
+        let dataStr = dataArr.join("")
         
-        // fs.writeFileSync(table,tempData.join(""))
+        fs.writeFileSync(table,dataStr,"hex")
 
     }
 }
@@ -134,15 +127,14 @@ exports.bendQuant = (tableA, tableB) =>  {
         // if table ID is 1, table ID can be between 00 and FF
 
 exports.bendHuffman = (tableA, tableB, tableC, tableD) => {
-    console.log(tableA)
-    console.log(tableB)
-    console.log(tableC)
-    console.log(tableD)
-    // loop over array of tables
-        // read text file
-        // analyze text file
-        // do the bending
-        // save over text file
+    let tableArr = [tableA, tableB, tableC, tableD]
+    
+    for (let i = 0; i < tableArr.length; i++) {
+
+        let table = tableArr[i]
+
+    }
+
 }
 
 // SOS
@@ -152,29 +144,85 @@ exports.bendHuffman = (tableA, tableB, tableC, tableD) => {
     // components - selector # and huffman table selection
         // can swap selector numbers between 01 and number of tables, non repeating
     // 2 bytes before end - beginning and end of spectral selection
+    // 1 byte - approx byte
 
-exports.bendSOSComponents = data => {
-    console.log(data)
-    // read text file
-    // analyze text file
-    // do the bending
-    // save over text file
+exports.bendSOSComponents = (table,config) => {
+
+    const data = fs.readFileSync(table);
+    let dataStr = data.toString('hex')
+
+    let marker=dataStr.substring(0,4)
+    let length=dataStr.substring(4,8)
+    let componentCount=dataStr.substring(8,10)
+    let components=dataStr.substring(10,22)
+    let spectralSelection=dataStr.substring(22,24)
+    let successiveApprox=dataStr.substring(24,26)
+
+    console.log('whole string: ', dataStr)
+    console.log('marker: ', marker)
+    console.log('length: ', length)
+    console.log('componentCount: ', componentCount)
+    console.log('components: ', components)
+    console.log('spectral selection: ', spectralSelection)
+    console.log('successive approx: ', successiveApprox)
+
+
+    let newSOS = marker + length + componentCount + components + spectralSelection + successiveApprox
+    console.log(newSOS)
+
+    
+    fs.writeFileSync(table,newSOS,"hex")
+
 }
 
-exports.bendSOSSpectralSelection = data => {
-    console.log(data)
-    // read text file
-    // analyze text file
-    // do the bending
-    // save over text file
+exports.bendSOSSpectralSelection = table => {
+    const data = fs.readFileSync(table);
+    let dataStr = data.toString('hex')
+
+    let marker=dataStr.substring(0,4)
+    let length=dataStr.substring(4,8)
+    let componentCount=dataStr.substring(8,10)
+    let components=dataStr.substring(10,22)
+    let spectralSelection=dataStr.substring(22,24)
+    let successiveApprox=dataStr.substring(24,26)
+
+    console.log('whole string: ', dataStr)
+    console.log('marker: ', marker)
+    console.log('length: ', length)
+    console.log('componentCount: ', componentCount)
+    console.log('components: ', components)
+    console.log('spectral selection: ', spectralSelection)
+    console.log('successive approx: ', successiveApprox)
+
+
+    let newSOS = marker + length + componentCount + components + spectralSelection + successiveApprox
+    console.log(newSOS)
+
+    
+    fs.writeFileSync(table,newSOS,"hex")
 }
 
-exports.bendSOSApproxBites = data => {
-    console.log(data)
-    // read text file
-    // analyze text file
-    // do the bending
-    // save over text file
+exports.bendSOSApproxBytes = table => {
+    const data = fs.readFileSync(table);
+    let dataStr = data.toString('hex')
+
+    let marker=dataStr.substring(0,4)
+    let length=dataStr.substring(4,8)
+    let componentCount=dataStr.substring(8,10)
+    let components=dataStr.substring(10,22)
+    let spectralSelection=dataStr.substring(22,24)
+    let successiveApprox=dataStr.substring(24,26)
+
+    let hexList = [0,1,2,3,4,5,6,7,8,9,"A","B","C","D","E","F"]
+    let newSuccessApprox = ""
+
+    for (let i = 0; i < 2; i++) {
+        newSuccessApprox+= hexList[utilities.getRandomIntInclusive(0,hexList.length)]
+    }
+
+    let newSOS = marker + length + componentCount + components + spectralSelection + newSuccessApprox
+    
+    fs.writeFileSync(table,newSOS,"hex")
 }
 
 exports.bendImageBody = data => {
