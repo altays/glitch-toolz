@@ -131,7 +131,60 @@ exports.bendHuffman = (tableA, tableB, tableC, tableD) => {
     
     for (let i = 0; i < tableArr.length; i++) {
 
-        let table = tableArr[i]
+        if (utilities.coinflip(true,false)) {
+
+            let table = tableArr[i]
+
+            const data = fs.readFileSync(table);
+            let dataStr = data.toString('hex')
+            // console.log(dataStr)
+            // console.log('dataStr',dataStr.length)
+
+            let marker = dataStr.substring(0,4)
+            // console.log(marker)
+            let size = dataStr.substring(4,8)
+            // console.log(size)
+            // console.log(parseInt(size,16))
+            let tableID = dataStr.substring(8,10)
+            // console.log(tableID)
+            let listBits = dataStr.substring(10,26)
+            // console.log(listBits)
+            let modBits = dataStr.substring(26,).split('')
+
+            let ogHuffman = marker+size+tableID+listBits+modBits.join('')
+            // console.log('oghuffman', ogHuffman.length)
+            // console.log('array', modBits)
+            // if tableID is 00, swap a random bit with a value between 00 and 0F
+            // if tableID is 01, swap a random bit with a value between 00 and FF
+
+            if (tableID == "00" || tableID == "01" ) {
+                let randomID = utilities.evenRound(utilities.getRandomIntInclusive(1,(modBits.length-1)))-1
+                let randomHexVal = utilities.getRandomHexValue()
+                console.log(randomHexVal)
+                modBits.splice(randomID,1,randomHexVal)
+        
+            } else {
+                let randomID = utilities.evenRound(utilities.getRandomIntInclusive(1,(modBits.length-1)))-1
+                let randomHexValA = utilities.getRandomHexValue()
+                let randomHexValB = utilities.getRandomHexValue()
+                console.log(randomHexValA)
+                console.log(randomHexValB)
+
+                modBits.splice(randomID,1,randomHexValA)
+                modBits.splice(randomID+1,1,randomHexValB)
+            }
+
+            modBits=modBits.join('')
+
+            let newHuffman = marker + size + tableID + listBits + modBits
+            console.log(dataStr)
+            console.log(newHuffman)
+    
+            fs.writeFileSync(table,newHuffman,"hex")
+
+            console.log('=====================')
+
+        }
 
     }
 
@@ -298,5 +351,8 @@ exports.bendImageBody = data => {
     // read text file
     // analyze text file
     // do the bending
+        // could shuffle array
+        // could sort array
+        // could use markov chains
     // save over text file
 }

@@ -258,3 +258,7 @@ exports.coinflip = (input1, input2) => {
 exports.shuffle = (array) => {   
     return array.sort(() => Math.random() - 0.5);
 }
+
+exports.evenRound = num => {
+   return 2 * Math.round(num / 2);
+}
