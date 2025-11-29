@@ -117,15 +117,6 @@ exports.bendQuant = (tableA, tableB) =>  {
     }
 }
 
-// Huff
-    // 2 bits for marker
-    // 2 bits for size
-    // 1 bit for table ID - either 01 or 00
-    // 16 bits - list bits, can't modifify
-    // remaining bits - can be modified
-        // if table ID is 0, can be between 0F and 00
-        // if table ID is 1, table ID can be between 00 and FF
-
 exports.bendHuffman = (tableA, tableB, tableC, tableD) => {
     let tableArr = [tableA, tableB, tableC, tableD]
     
@@ -170,18 +161,7 @@ exports.bendHuffman = (tableA, tableB, tableC, tableD) => {
 
 }
 
-// SOS
-    // 2 bits for marker
-    // 2 bits for size
-    // 1 bit for number of components
-    // components - selector # and huffman table selection
-        // can swap selector numbers between 01 and number of tables, non repeating
-    // 2 bytes before end - beginning and end of spectral selection
-    // 1 byte - approx byte
-
 exports.bendSOSComponents = (sosTable,huffTableA,huffTableB,huffTableC,huffTableD) => {
-
-    // dig into this more - it's not working 100%
 
     // component table
     const data = fs.readFileSync(sosTable);
@@ -204,17 +184,6 @@ exports.bendSOSComponents = (sosTable,huffTableA,huffTableB,huffTableC,huffTable
     const huffTableDData = fs.readFileSync(huffTableD).toString('hex');
     let hufftableIDD = huffTableDData.substring(8,10)
 
-    console.log(huffTableAData, hufftableIDA)
-    console.log('=================')
-    console.log(huffTableBData, hufftableIDB)
-    console.log('=================')
-    console.log(huffTableCData, hufftableIDC)
-    console.log('=================')
-    console.log(huffTableDData, hufftableIDD)
-    console.log('=================')
-
-    // console.log('componentCount: ', componentCount)
-    // console.log('components: ', components)
     let componentGroupSelA = components.substring(0,2)
     let componentGroupTableA = components.substring(2,4)
     let componentGroupSelB = components.substring(4,6)
@@ -222,57 +191,25 @@ exports.bendSOSComponents = (sosTable,huffTableA,huffTableB,huffTableC,huffTable
     let componentGroupSelC = components.substring(8,10)
     let componentGroupTableC = components.substring(10,12)
 
-    // let newCompontentTableA, newCompontentTableB, newCompontentTableC
-
     let componentGroupTableArr = [undefined, undefined, undefined]
 
     for (let i = 0; i<componentGroupTableArr.length; i++){
 
-        // add skip chance - another lever!
-
         let bendProbability=(utilities.getRandomIntInclusive(0,100)/100)
 
-        console.log(componentGroupTableArr[i])
-
         if ((bendProbability > 0) && (bendProbability <=0.25)) {
-            componentGroupTableArr[i]=hufftableIDA
-            
-            console.log('here 1', hufftableIDA, componentGroupTableArr[i])
-            
+            componentGroupTableArr[i]=hufftableIDA            
         } else if ((bendProbability > 0.25) && (bendProbability <=0.5)) {
             componentGroupTableArr[i]=hufftableIDB
-            console.log('here 2', hufftableIDB, componentGroupTableArr[i])
-
         } else if ((bendProbability > 0.5) && (bendProbability <=0.75)) {
             componentGroupTableArr[i]=hufftableIDC
-            console.log('here 3', hufftableIDC, componentGroupTableArr[i])
-
         } else {
             componentGroupTableArr[i]=hufftableIDD
-            console.log('here 4', hufftableIDD, componentGroupTableArr[i])
-
         }
     }
-
-    console.log('Group 1', componentGroupSelA, componentGroupTableA)
-    console.log('Group 2', componentGroupSelB, componentGroupTableB)
-    console.log('Group 3', componentGroupSelC, componentGroupTableC)
-    console.log('New Group 1', componentGroupSelA, componentGroupTableArr[0])
-    console.log('New Group 2', componentGroupSelB, componentGroupTableArr[1])
-    console.log('New Group 3', componentGroupSelC, componentGroupTableArr[2])
-
-    // work out logic for new components here 
     
     let newComponents = componentGroupSelA + componentGroupTableArr[0] + componentGroupSelB + componentGroupTableArr[1] + componentGroupSelC + componentGroupTableArr[2]
-
-    console.log(components)
-    console.log(newComponents)
-
     let newSOS = marker + length + componentCount + newComponents + spectralSelection + successiveApprox
-
-    console.log(dataStr)
-
-    console.log(newSOS)
     
     fs.writeFileSync(sosTable,newSOS,"hex")
 }
