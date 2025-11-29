@@ -18,7 +18,7 @@ then
 elif [ "$1" = "jpgBend" ]
 then
     echo "route jpg bend" 
-    node index.js bending $bendingFolderName jpg hsbq
+    node index.js bending $bendingFolderName jpg c
 elif [ "$1" = "jpgCompileBend" ]
 then
     echo "route jpg compilebend" 
@@ -26,7 +26,7 @@ then
 elif [ "$1" = "jpgBendAndCompile" ]
 then
     echo "route jpg compileandbend"
-    node index.js bending $bendingFolderName jpg hsbq
+    node index.js bending $bendingFolderName jpg c
     node index.js compile $bendingFolderName jpg
 elif [ "$1" = "i" ]
 then

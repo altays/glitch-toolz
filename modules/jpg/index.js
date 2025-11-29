@@ -179,11 +179,12 @@ exports.bendHuffman = (tableA, tableB, tableC, tableD) => {
     // 2 bytes before end - beginning and end of spectral selection
     // 1 byte - approx byte
 
-exports.bendSOSComponents = (table,config) => {
+exports.bendSOSComponents = (SOSTable,huffTableA,huffTableB,huffTableC,huffTableD) => {
 
     // dig into this more - it's not working 100%
 
-    const data = fs.readFileSync(table);
+    // component table
+    const data = fs.readFileSync(SOSTable);
     let dataStr = data.toString('hex')
 
     let marker=dataStr.substring(0,4)
@@ -193,10 +194,27 @@ exports.bendSOSComponents = (table,config) => {
     let spectralSelection=dataStr.substring(22,26)
     let successiveApprox=dataStr.substring(26,28)
 
-    console.log(dataStr)
+    // huffman tables - just need the ids
+    const huffTableAData = fs.readFileSync(huffTableA).toString('hex');
+    let hufftableIDA = huffTableAData.substring(8,10)
+    const huffTableBData = fs.readFileSync(huffTableB).toString('hex');
+    let hufftableIDB = huffTableBData.substring(8,10)
+    const huffTableCData = fs.readFileSync(huffTableC).toString('hex');
+    let hufftableIDC = huffTableCData.substring(8,10)
+    const huffTableDData = fs.readFileSync(huffTableD).toString('hex');
+    let hufftableIDD = huffTableDData.substring(8,10)
 
-    console.log('componentCount: ', componentCount)
-    console.log('components: ', components)
+    console.log(huffTableAData, hufftableIDA)
+    console.log('=================')
+    console.log(huffTableBData, hufftableIDB)
+    console.log('=================')
+    console.log(huffTableCData, hufftableIDC)
+    console.log('=================')
+    console.log(huffTableDData, hufftableIDD)
+    console.log('=================')
+
+    // console.log('componentCount: ', componentCount)
+    // console.log('components: ', components)
     let componentGroupSelA = components.substring(0,2)
     let componentGroupTableA = components.substring(2,4)
     let componentGroupSelB = components.substring(4,6)
@@ -204,78 +222,52 @@ exports.bendSOSComponents = (table,config) => {
     let componentGroupSelC = components.substring(8,10)
     let componentGroupTableC = components.substring(10,12)
 
-    let newComponentGroup = ""
-    let newComponentGroupA = ""
-    let newComponentGroupB = ""
-    let newComponentGroupC = ""
+    let newCompontentTableA, newCompontentTableB, newCompontentTableC
 
-    // randomly swap first 2 numbers of each component group
-    // console.log('og components', componentGroupSelA,componentGroupTableA,componentGroupSelB,componentGroupTableB,componentGroupSelC,componentGroupTableC)
+    let componentGroupTableArr = [newCompontentTableA, newCompontentTableB, newCompontentTableC]
 
-    let modChanceArr = [0,1,2]
-    let newArr = utilities.shuffle(modChanceArr)
-    console.log(newArr)
+    for (let i = 0; i<componentGroupTableArr.length; i++){
 
-    // console.log('mod chances', componentGroupAModChance, componentGroupBModChance, componentGroupCModChance)
+        // add skip chance - another lever!
+
+        let bendProbability=(utilities.getRandomIntInclusive(0,100)/100)
+
+        console.log(componentGroupTableArr[i])
+
+        if ((bendProbability > 0) && (bendProbability <=0.25)) {
+            componentGroupTableArr[i]=hufftableIDA
+            
+            console.log('here 1', hufftableIDA, componentGroupTableArr[i])
+            
+        } else if ((bendProbability > 0.25) && (bendProbability <=0.5)) {
+            componentGroupTableArr[i]=hufftableIDB
+            console.log('here 2', hufftableIDB, componentGroupTableArr[i])
+
+        } else if ((bendProbability > 0.5) && (bendProbability <=0.75)) {
+            componentGroupTableArr[i]=hufftableIDC
+            console.log('here 3', hufftableIDC, componentGroupTableArr[i])
+
+        } else {
+            componentGroupTableArr[i]=hufftableIDD
+            console.log('here 4', hufftableIDD, componentGroupTableArr[i])
+
+        }
+    }
+
+    console.log('Group 1', componentGroupSelA, componentGroupTableA)
+    console.log('Group 2', componentGroupSelB, componentGroupTableB)
+    console.log('Group 3', componentGroupSelC, componentGroupTableC)
+    console.log('New Group 1', componentGroupSelA, componentGroupTableArr[0])
+    console.log('New Group 2', componentGroupSelB, componentGroupTableArr[1])
+    console.log('New Group 3', componentGroupSelC, componentGroupTableArr[2])
+
+    // work out logic for new components here 
     
-    switch (newArr[0]) {
-    case 0:
-        newComponentGroupA = componentGroupSelA
-        break;
-    case 1:
-        newComponentGroupA = componentGroupSelB
-        break;
-    case 2:
-        newComponentGroupA = componentGroupSelC
-        break;
-    default:
-        console.log(`Invalid Num`);
-    }
+    let newComponents = ""
 
-    switch (newArr[1]) {
-    case 0:
-        newComponentGroupB = componentGroupSelA
-        break;
-    case 1:
-        newComponentGroupB = componentGroupSelB
-        break;
-    case 2:
-        newComponentGroupB = componentGroupSelC
-        break;
-    default:
-        console.log(`Invalid Num`);
-    }
-
-    switch (newArr[2]) {
-    case 0:
-        newComponentGroupC = componentGroupSelA
-        break;
-    case 1:
-        newComponentGroupC = componentGroupSelB
-        break;
-    case 2:
-        newComponentGroupC = componentGroupSelC
-        break;
-    default:
-        console.log(`Invalid Num`);
-    }
-
-    newComponentGroup = newComponentGroupA + componentGroupTableA + newComponentGroupB + componentGroupTableB + newComponentGroupC + componentGroupTableC
-
-    console.log('new components', newComponentGroupA , componentGroupTableA , newComponentGroupB , componentGroupTableB , newComponentGroupC , componentGroupTableC)
-
-    let newSOS = marker + length + componentCount + newComponentGroup + spectralSelection + successiveApprox
-    console.log(newSOS)
+    let newSOS = marker + length + componentCount + newComponents + spectralSelection + successiveApprox
     
-    fs.writeFileSync(table,newSOS,"hex")
-    // ffda
-    // 000c
-    // 03
-    // 0100
-    // 0311
-    // 0211
-    // 003f00
-
+    // fs.writeFileSync(table,newSOS,"hex")
 }
 
 exports.bendSOSSpectralSelection = table => {

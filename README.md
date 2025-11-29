@@ -12,7 +12,7 @@ Update the variables at the top of the sh file with the name of the jpg (without
 
 Use sh main.sh jpgAnalyze to break the jpg into chunks
 Use sh main.sh jpgCompile to compile the jpg chunks into an image
-Use sh main.sh jpgBend and h,s,b, and/or q to bend the jpg chunks
+Use sh main.sh jpgBend to bend the jpg chunks. Check the sh file to see arguments
 Use sh main.sh jpgCompileBend to compile the bent chunks
 Use sh main.sh jpgBendAndCompile to bend and compile all at once!
 
@@ -24,7 +24,7 @@ Currently:
 * allows for some jpeg bending - huffman tables, quantization, SOS
 
 Current To Dos
-* develop bending functionality for jpegs - fine tune component bending, add more levers
+* develop bending functionality for jpegs - fine tune component bending, allow for image data bending, add more levers
 * develop out GIF analysis - scrambling color table, adjusting animation options
 * fix shell script - analyzing the same image will nest a folder in the -bending folder
 

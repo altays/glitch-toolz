@@ -102,7 +102,11 @@ exports.bending = (input, format, options) => {
             case 'c':
                 // console.log('sos-tables-components')
                 tableA = path.join(folderPath,"k-SOS.txt")
-                jpg.bendSOSComponents(tableA)
+                tableB = path.join(folderPath,"g-Huff1.txt")
+                tableC = path.join(folderPath,"h-Huff2.txt")
+                tableD = path.join(folderPath,"i-Huff3.txt")
+                tableE = path.join(folderPath,"j-Huff4.txt")
+                jpg.bendSOSComponents(tableA, tableB, tableC, tableD, tableE)
                 break;
             case 's':
                 // console.log('sos-tables-spectral')
@@ -120,6 +124,7 @@ exports.bending = (input, format, options) => {
                 jpg.bendImageBody(tableA)
                 break;
             default:
+                console.log('try adding qhcsbi as arguments to see what happens!')
                 break;
         }
     }
