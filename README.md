@@ -4,13 +4,13 @@
 
 1. Make sure you have node installed!
 2. clone the repo
-3. Use 'sh main.sh' i to set up the folder structure
+3. Use 'sh main.sh i' to set up the folder structure
 4. Add a jpg to the 'input' folder
 5. Update the variables at the top of the sh file with the name of the jpg (without the extension)
 6. Use 'sh main.sh jpgAnalyze' to break the jpg into txt files based on the 
-7. chunk. This will create a duplicate folder
-8. Use 'sh main.sh jpgBend' and any combination of 'c', 'q', 's', 'b', and/or 'i' to bend the txt chunks.
-9. Use 'sh main.sh reset' if you start getting broken images - this will delete the '-bending' folder and copy straight from the clean data.
+chunk. This will create a duplicate folder
+7. Use 'sh main.sh jpgBend' and any combination of 'c', 'q', 's', 'b', and/or 'i' to bend the txt chunks.
+8. Use 'sh main.sh reset' if you start getting broken images - this will delete the '-bending' folder and copy straight from the clean data.
 
 ## How to use
 
