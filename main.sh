@@ -15,17 +15,17 @@ elif [ "$1" = "jpgCompile" ]
 then
     echo "route jpg compile" 
     node index.js compile $sampleJPGName jpg
-elif [ "$1" = "jpgBending" ]
+elif [ "$1" = "jpgBend" ]
 then
-    echo "route jpg bending" 
+    echo "route jpg bend" 
     node index.js bending $bendingFolderName jpg hsbq
-elif [ "$1" = "jpgBendingCompile" ]
+elif [ "$1" = "jpgCompileBend" ]
 then
-    echo "route jpg bendingcompile" 
+    echo "route jpg compilebend" 
     node index.js compile $bendingFolderName jpg
-elif [ "$1" = "jpgBendingAndCompile" ]
+elif [ "$1" = "jpgBendAndCompile" ]
 then
-    echo "route jpg bendingcompile"
+    echo "route jpg compileandbend"
     node index.js bending $bendingFolderName jpg hsbq
     node index.js compile $bendingFolderName jpg
 elif [ "$1" = "i" ]
