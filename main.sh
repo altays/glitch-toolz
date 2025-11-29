@@ -18,7 +18,7 @@ then
 elif [ "$1" = "jpgBend" ]
 then
     echo "route jpg bend" 
-    node index.js bending $bendingFolderName jpg c
+    node index.js bending $bendingFolderName jpg qcsb
 elif [ "$1" = "jpgCompileBend" ]
 then
     echo "route jpg compilebend" 
@@ -26,12 +26,17 @@ then
 elif [ "$1" = "jpgBendAndCompile" ]
 then
     echo "route jpg compileandbend"
-    node index.js bending $bendingFolderName jpg c
+    node index.js bending $bendingFolderName jpg qcsb
     node index.js compile $bendingFolderName jpg
 elif [ "$1" = "i" ]
 then
     echo "route initialize" 
     mkdir assets assets/data assets/input assets/output
+elif [ "$1" = "reset" ]
+then
+    echo "route reset" 
+    rm -rf assets/data/$sampleJPGName-bending
+    cp -r assets/data/$sampleJPGName assets/data/$sampleJPGName-bending
 else
     echo "Please indicate a valid route."
 fi
