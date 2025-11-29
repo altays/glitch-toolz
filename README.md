@@ -2,19 +2,20 @@
 
 ## How to set up
 
-Make sure you have node installed!
-clone the repo
-Use 'sh main.sh' i to set up the folder structure
-Add a jpg to the 'input' folder
-Update the variables at the top of the sh file with the name of the jpg (without the extension)
-Use 'sh main.sh jpgAnalyze' to break the jpg into txt files based on the chunk. This will create a duplicate folder
-Use 'sh main.sh jpgBend' and any combination of 'c', 'q', 's', 'b', and/or 'i' to bend the txt chunks.
-Use 'sh main.sh reset' if you start getting broken images - this will delete the '-bending' folder and copy straight from the clean data.
+1. Make sure you have node installed!
+2. clone the repo
+3. Use 'sh main.sh' i to set up the folder structure
+4. Add a jpg to the 'input' folder
+5. Update the variables at the top of the sh file with the name of the jpg (without the extension)
+6. Use 'sh main.sh jpgAnalyze' to break the jpg into txt files based on the 
+7. chunk. This will create a duplicate folder
+8. Use 'sh main.sh jpgBend' and any combination of 'c', 'q', 's', 'b', and/or 'i' to bend the txt chunks.
+9. Use 'sh main.sh reset' if you start getting broken images - this will delete the '-bending' folder and copy straight from the clean data.
 
 ## How to use
 
 * sh main.sh i will create the folder structure for data and output files
-* sh main.sh jpgAnalyze will break the jpg into individual txt files and create two folders - one with the OG data, the other (ending in "-bending") that the script will apply bends to. Only run this once when working with a new file!
+* sh main.sh jpgAnalyze will break the jpg into individual txt files and create two folders - one with the OG data, the other (ending in "-bending") that the script will apply bends to. **Only run this once when working with a new file!**
 * sh main.sh jpgCompile will compile the jpg txt file chunks into an image
 * sh main.sh jpgBend will bend the jpg chunks. Arguments include:
     * q - swaps the quantization table destinations. Subtle
