@@ -179,12 +179,12 @@ exports.bendHuffman = (tableA, tableB, tableC, tableD) => {
     // 2 bytes before end - beginning and end of spectral selection
     // 1 byte - approx byte
 
-exports.bendSOSComponents = (SOSTable,huffTableA,huffTableB,huffTableC,huffTableD) => {
+exports.bendSOSComponents = (sosTable,huffTableA,huffTableB,huffTableC,huffTableD) => {
 
     // dig into this more - it's not working 100%
 
     // component table
-    const data = fs.readFileSync(SOSTable);
+    const data = fs.readFileSync(sosTable);
     let dataStr = data.toString('hex')
 
     let marker=dataStr.substring(0,4)
@@ -222,9 +222,9 @@ exports.bendSOSComponents = (SOSTable,huffTableA,huffTableB,huffTableC,huffTable
     let componentGroupSelC = components.substring(8,10)
     let componentGroupTableC = components.substring(10,12)
 
-    let newCompontentTableA, newCompontentTableB, newCompontentTableC
+    // let newCompontentTableA, newCompontentTableB, newCompontentTableC
 
-    let componentGroupTableArr = [newCompontentTableA, newCompontentTableB, newCompontentTableC]
+    let componentGroupTableArr = [undefined, undefined, undefined]
 
     for (let i = 0; i<componentGroupTableArr.length; i++){
 
@@ -263,11 +263,18 @@ exports.bendSOSComponents = (SOSTable,huffTableA,huffTableB,huffTableC,huffTable
 
     // work out logic for new components here 
     
-    let newComponents = ""
+    let newComponents = componentGroupSelA + componentGroupTableArr[0] + componentGroupSelB + componentGroupTableArr[1] + componentGroupSelC + componentGroupTableArr[2]
+
+    console.log(components)
+    console.log(newComponents)
 
     let newSOS = marker + length + componentCount + newComponents + spectralSelection + successiveApprox
+
+    console.log(dataStr)
+
+    console.log(newSOS)
     
-    // fs.writeFileSync(table,newSOS,"hex")
+    fs.writeFileSync(sosTable,newSOS,"hex")
 }
 
 exports.bendSOSSpectralSelection = table => {
