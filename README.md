@@ -36,7 +36,7 @@ Currently:
 * allows for some jpeg bending - huffman tables, quantization, SOS
 
 Current To Dos
-* develop bending functionality for jpegs - fine tune component bending, allow for image data bending, add more levers
+* develop bending functionality for jpegs - add more levers
 * develop out GIF analysis - scrambling color table, adjusting animation options
 * add some ffmpeg scripts - converting between file formats, for instance
 
