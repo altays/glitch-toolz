@@ -1,3 +1,4 @@
+const { markovChain } = require('../../../../computer-poetry/text-reconstructing/Text-Reconstruction/scripts/word-processing');
 const utilities = require('../utilities');
 const fs = require('node:fs');
 
@@ -264,11 +265,44 @@ exports.bendSOSApproxBytes = table => {
 
 exports.bendImageBody = data => {
     console.log(data)
-    // read text file
-    // analyze text file
-    // do the bending
-        // could shuffle array
-        // could sort array
-        // could use markov chains
-    // save over text file
+
+    const table = fs.readFileSync(data);
+    let tableStr = table.toString('hex')
+
+    let newBody = tableStr
+    let newBodyArr = tableStr.split('')
+
+
+    console.log(typeof tableStr)
+
+    // let revBody=newBody.split('').reverse().join("")
+
+    console.log(revBody.length)
+
+    // let markov, markovNew;
+    // markovNew=1;
+
+    // for (let i = 0; i < tableStr.length; i+= markovNew.length) {
+    //     markovNew=utilities.markovChain(tableStr,10)
+    //     markov += markovNew
+    //     console.log(i)
+    // }
+
+
+    // methods of scrambling
+        // markov chain - taking a long time, figure out how to optimize
+            // work out patterns
+            // create chains based on length of original body
+        // reverse
+            // chunks
+            // whole block
+        // sort
+            // chunks
+            // whole block
+
+    
+    
+
+    fs.writeFileSync(data,revBody,"hex")
+
 }
